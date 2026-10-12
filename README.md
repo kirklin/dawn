@@ -8,6 +8,12 @@
 
 Dawn 黎明守护者 is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
 
+## 灵感来源
+
+灵感来源于 [sunsetbot.top](https://sunsetbot.top)，其实之前就留意到它已经停服了。后来在 Ruby 的日出日落晚霞投稿群里，马老师问：「sunsetbot」小程序没用了吗？于是 Ruby 决定和好朋友 Kirk 一起“复活”一下这个产品，主要代码贡献是 Kirk。
+
+![sunsetbot.top 截图](.github/assets/sunsetbot-origin.png)
+
 ![Pale Blue Dot inspiration](.github/assets/pale-blue-dot-inspiration.jpg)
 
 <p align="center">
