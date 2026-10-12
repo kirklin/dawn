@@ -8,6 +8,8 @@
 
 Dawn 黎明守护者 is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
 
+![Pale Blue Dot inspiration](.github/assets/pale-blue-dot-inspiration.jpg)
+
 <p align="center">
   <img src=".github/assets/screens.png" alt="New York at midday and in the sunset glow, and the cards further down the page" width="100%">
 </p>
