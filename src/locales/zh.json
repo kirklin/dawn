@@ -1,0 +1,233 @@
+{
+  "App": {
+    "name": "朝暮",
+    "brand": "朝暮 · Twilit",
+    "description": "火烧云、日出日落、月相和观星预报"
+  },
+  "Common": {
+    "today": "今天",
+    "tomorrow": "明天",
+    "dayAfterTomorrow": "后天",
+    "close": "关闭",
+    "duration": "{hours}小时{minutes}分",
+    "durationMinutes": "{minutes}分钟"
+  },
+  "Glow": {
+    "level": {
+      "none": "不烧",
+      "faint": "微烧",
+      "small": "小烧",
+      "medium": "中烧",
+      "large": "大烧",
+      "epic": "超级大烧"
+    },
+    "event": {
+      "sunrise": "朝霞",
+      "sunset": "晚霞"
+    },
+    "sun": {
+      "sunrise": "日出",
+      "sunset": "日落"
+    }
+  },
+  "Direction": {
+    "north": "北",
+    "east": "东",
+    "south": "南",
+    "west": "西",
+    "exact": "正{base}",
+    "offset": "{base}偏{side} {degrees}°"
+  },
+  "Place": {
+    "myLocation": "我的位置",
+    "heroLine": "{day}{event} · 鲜艳度 {score}%",
+    "heroTimes": "日出 {sunrise} · 日落 {sunset}",
+    "compact": "{level} | {day}{event}",
+    "noEvents": "未来几天没有日出日落",
+    "summary": {
+      "lead": "{day}{sun}前后，",
+      "canvas": {
+        "none": "头顶几乎没有中高云",
+        "few": "头顶中高云较少，约 {percent}%",
+        "some": "头顶中高云约 {percent}%",
+        "full": "中高云几乎铺满天空"
+      },
+      "path": {
+        "clear": "{sun}方向 400 公里内低云很少，阳光能照到云底",
+        "partial": "{sun}方向有一些云，会挡掉部分阳光",
+        "blocked": "{sun}方向云层较厚，阳光很难照进来"
+      },
+      "view": "本地低云较多，视线会被遮挡",
+      "conclusion": "{event}可能{level}。",
+      "conclusionNone": "{event}大概率不烧。",
+      "uncertain": "ECMWF 和 GFS 两个模式的结论差别较大。"
+    },
+    "hourly": {
+      "title": "逐小时云量",
+      "now": "现在"
+    },
+    "forecast": {
+      "title": "火烧云预报",
+      "hint": "点按一行查看成因"
+    },
+    "sun": {
+      "bottomSunrise": "日出：{time}",
+      "bottomSunset": "日落：{time}",
+      "polarDay": "极昼",
+      "polarNight": "极夜",
+      "remaining": "日照剩余：{duration}",
+      "untilSunrise": "距日出：{duration}",
+      "daylight": "昼长：{duration}",
+      "firstLight": "曙光",
+      "lastLight": "暮光",
+      "totalDaylight": "昼长",
+      "averages": "日出日落月均值",
+      "longest": "最长白昼：{duration}，{date}",
+      "month": "{month}月"
+    },
+    "golden": {
+      "title": "黄金时刻",
+      "golden": "黄金时刻",
+      "blue": "蓝调时刻",
+      "morning": "清晨黄金时刻",
+      "evening": "傍晚黄金时刻",
+      "ongoing": "正在进行",
+      "none": "近几天没有黄金时刻"
+    },
+    "analysis": {
+      "title": "{day}{event}成因",
+      "canvas": "中高云覆盖",
+      "transmission": "光路通透",
+      "view": "本地视野",
+      "aerosol": "空气通透",
+      "models": "ECMWF {ecmwf}% · GFS {gfs}%",
+      "agree": "两个模式结论接近",
+      "disagree": "两个模式分歧较大"
+    },
+    "section": {
+      "title": "大气截面",
+      "direction": "{sun}方向 {direction}",
+      "local": "本地",
+      "distance": "{km} 公里",
+      "high": "高云",
+      "mid": "中云",
+      "low": "低云",
+      "ray": "照亮云底的阳光贴着这一段低空射来"
+    },
+    "layers": {
+      "title": "{sun}时云层",
+      "high": "高云",
+      "mid": "中云",
+      "low": "低云"
+    },
+    "azimuth": {
+      "title": "日出日落方位",
+      "value": "{degrees}° {direction}"
+    },
+    "aerosol": {
+      "title": "气溶胶",
+      "unavailable": "暂无数据",
+      "level": {
+        "pristine": "极通透",
+        "clear": "通透",
+        "moderate": "一般",
+        "hazy": "较浑浊",
+        "polluted": "浑浊"
+      },
+      "description": {
+        "pristine": "空气非常干净，霞光颜色纯净饱和。",
+        "clear": "空气干净，霞光颜色饱和。",
+        "moderate": "有一些雾霾，颜色会稍微发灰。",
+        "hazy": "雾霾较重，霞光偏暗、发灰。",
+        "polluted": "雾霾很重，很难看到鲜艳的颜色。"
+      }
+    },
+    "moon": {
+      "title": "月相",
+      "phase": {
+        "new": "新月",
+        "waxingCrescent": "蛾眉月",
+        "firstQuarter": "上弦月",
+        "waxingGibbous": "盈凸月",
+        "full": "满月",
+        "waningGibbous": "亏凸月",
+        "thirdQuarter": "下弦月",
+        "waningCrescent": "残月"
+      },
+      "illumination": "照明度",
+      "illuminationValue": "照明度 {percent}%",
+      "moonrise": "月出",
+      "moonset": "月落",
+      "nextFull": "距离满月",
+      "fullToday": "今天",
+      "days": "{count} 天",
+      "riseSet": "月出月落",
+      "upcoming": "接下来的月相",
+      "none": "不出现"
+    },
+    "night": {
+      "title": "今晚观星",
+      "rating": {
+        "excellent": "极佳",
+        "good": "不错",
+        "fair": "一般",
+        "poor": "较差"
+      },
+      "window": "{start} 天黑透，{end} 开始天亮",
+      "windowNautical": "{start} 至 {end} 天色最暗，天不会完全黑",
+      "best": "最佳时段 {start}–{end}",
+      "noBest": "没有云少、月光弱的连续时段",
+      "moonFaint": "月光 {percent}%，几乎没有影响",
+      "moonBright": "月光 {percent}%，月亮升起后天空会变亮",
+      "moonDown": "月光 {percent}%，天黑透时月亮不在天上",
+      "transparency": "空气 {level}",
+      "none": "今晚天不会黑"
+    },
+    "footer": {
+      "data": "气象数据：Open-Meteo（ECMWF IFS、NCEP GFS、CAMS）",
+      "runs": "起报时间：ECMWF {ecmwf} · GFS {gfs} · CAMS {cams}",
+      "places": "地名：© OpenStreetMap 贡献者",
+      "disclaimer": "火烧云评分由云层和气溶胶预报估算，仅供参考。"
+    },
+    "toolbar": {
+      "list": "地点列表",
+      "page": "第 {index} 个地点，共 {total} 个"
+    },
+    "preview": {
+      "add": "添加",
+      "cancel": "取消"
+    },
+    "error": {
+      "title": "预报获取失败",
+      "retry": "重试",
+      "back": "返回地点列表"
+    }
+  },
+  "Places": {
+    "title": "朝暮",
+    "search": "搜索城市或景点",
+    "clear": "清除",
+    "cancel": "取消",
+    "searching": "正在搜索…",
+    "searchFailed": "搜索失败：{message}",
+    "noResults": "没有找到相关地点",
+    "delete": "删除",
+    "myLocation": "我的位置",
+    "locate": "开启定位",
+    "locateHint": "查看当前位置的火烧云预报",
+    "locating": "正在定位…",
+    "empty": "搜索并添加想看的地点"
+  },
+  "Locate": {
+    "denied": "没有定位权限，请在浏览器设置里允许本网站获取位置",
+    "unavailable": "暂时无法确定你的位置",
+    "timeout": "定位超时，请稍后再试",
+    "unsupported": "这个浏览器不支持定位",
+    "failed": "定位失败：{message}"
+  },
+  "NotFound": {
+    "title": "页面不存在",
+    "description": "这个地址没有内容。",
+    "backHome": "返回首页"
+  }
+}
