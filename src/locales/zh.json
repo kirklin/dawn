@@ -1,7 +1,7 @@
 {
   "App": {
     "name": "黎明守护者",
-    "brand": "Dawn 黎明守护者",
+    "brand": "twilit.cc 黎明守护者",
     "description": "未来四天的朝霞与晚霞预报"
   },
   "Common": {
@@ -143,7 +143,7 @@
     }
   },
   "Places": {
-    "title": "Dawn 黎明守护者",
+    "title": "twilit.cc 黎明守护者",
     "search": "搜索城市或景点",
     "clear": "清除",
     "cancel": "取消",
