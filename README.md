@@ -1,12 +1,12 @@
 <p align="center">
-  <img src=".github/assets/banner.png?v=2" alt="twilit.cc 黎明守护者, with three phones showing New York at midday, in the sunset glow and at night" width="100%">
+  <img src=".github/assets/banner.png?v=2" alt="twilit.cc, with three phones showing New York at midday, in the sunset glow and at night" width="100%">
 </p>
 
-# twilit.cc 黎明守护者
+# twilit.cc
 
 **Sunrise and sunset glow forecast for the next four days.**
 
-twilit.cc 黎明守护者 is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
+twilit.cc is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
 
 ## 灵感来源
 
