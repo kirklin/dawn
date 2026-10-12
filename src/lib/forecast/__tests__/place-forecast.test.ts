@@ -19,6 +19,9 @@ describe("getPlaceForecast", () => {
       for (const model of MODEL_IDS) {
         expect(event.models[model].section).toHaveLength(PATH_DISTANCES_KM.length);
       }
+      for (const wind of Object.values(event.wind)) {
+        expect(Math.hypot(wind.east, wind.north)).toBeLessThan(120);
+      }
     }
 
     const sunsets = forecast.events.filter(event => event.kind === "sunset");

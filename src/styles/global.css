@@ -13,27 +13,6 @@
   --font-sans:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Helvetica Neue",
     "Microsoft YaHei", sans-serif;
-
-  /* Stars dimming and brightening, each on its own delay. */
-  --animate-twinkle: twinkle 5s ease-in-out infinite;
-
-  @keyframes twinkle {
-    50% {
-      fill-opacity: 0.3;
-    }
-  }
-
-  /* Cloud banks sliding slowly to and fro. */
-  --animate-drift: drift 120s ease-in-out infinite alternate;
-
-  @keyframes drift {
-    from {
-      transform: translateX(-8%);
-    }
-    to {
-      transform: translateX(8%);
-    }
-  }
 }
 
 /* Frosted card over the sky; `--sky-card` holds the RGB channels of the sky tint behind it. */
@@ -48,13 +27,6 @@
 
   &::-webkit-scrollbar {
     display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-twinkle,
-  .animate-drift {
-    animation: none;
   }
 }
 

@@ -61,7 +61,7 @@ function SummaryCell({ place, current, summary }: { place: SavedPlace; current: 
         ? `${labels.day(nextEvent.date, nextEvent.time)}${glow(`event.${nextEvent.kind}`)} ${formatClock(nextEvent.time, summary.timezone)}`
         : p("noEvents")}
       times={sunrise !== null && sunset !== null
-        ? p("heroTimes", { sunrise: formatClock(sunrise, summary.timezone), sunset: formatClock(sunset, summary.timezone) })
+        ? t("sunTimes", { sunrise: formatClock(sunrise, summary.timezone), sunset: formatClock(sunset, summary.timezone) })
         : ""}
       background={colors ? `linear-gradient(180deg, ${rgb(colors.top)} 0%, ${rgb(colors.bottom)} 100%)` : PENDING_BACKGROUND}
     />

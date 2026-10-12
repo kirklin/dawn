@@ -1,7 +1,10 @@
-/** Cloud forecasts come from two global models; their disagreement is shown as forecast uncertainty. */
+/**
+ * Cloud forecasts come from two global models; their disagreement is shown as forecast uncertainty.
+ * Open-Meteo serves ECMWF's pressure-level winds only from its 0.25° open-data run.
+ */
 export const CLOUD_MODELS = [
-  { id: "ecmwf", openMeteo: "ecmwf_ifs", metadata: "ecmwf_ifs" },
-  { id: "gfs", openMeteo: "gfs_seamless", metadata: "ncep_gfs013" },
+  { id: "ecmwf", openMeteo: "ecmwf_ifs", winds: "ecmwf_ifs025", metadata: "ecmwf_ifs" },
+  { id: "gfs", openMeteo: "gfs_seamless", winds: "gfs_seamless", metadata: "ncep_gfs013" },
 ] as const;
 
 export type ModelId = (typeof CLOUD_MODELS)[number]["id"];

@@ -40,8 +40,13 @@
   },
   "Place": {
     "myLocation": "我的位置",
-    "heroLine": "{day}{event} · 鲜艳度 {score}%",
-    "heroTimes": "日出 {sunrise} · 日落 {sunset}",
+    "hero": {
+      "heading": "{day}{event} {time}",
+      "meter": "鲜艳度 {score}%",
+      "countdown": "{duration}后",
+      "now": "正在进行",
+      "direction": "方位"
+    },
     "compact": "{level} | {day}{event}",
     "noEvents": "未来几天没有日出日落",
     "summary": {
@@ -216,7 +221,8 @@
     "locate": "开启定位",
     "locateHint": "查看当前位置的火烧云预报",
     "locating": "正在定位…",
-    "empty": "搜索并添加想看的地点"
+    "empty": "搜索并添加想看的地点",
+    "sunTimes": "日出 {sunrise} · 日落 {sunset}"
   },
   "Locate": {
     "denied": "没有定位权限，请在浏览器设置里允许本网站获取位置",

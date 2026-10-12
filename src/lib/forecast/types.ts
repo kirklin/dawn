@@ -1,7 +1,7 @@
 import type { CloudLayers, GlowLevel, GlowResult } from "./glow";
 import type { ModelId } from "./models";
 import type { NightOutlook } from "./night";
-import type { ModelRuns } from "./open-meteo";
+import type { ModelRuns, Wind, WindLayer } from "./open-meteo";
 import type { MoonQuarterEvent, MoonState } from "~/lib/astro/moon";
 import type { SunDay } from "~/lib/astro/sun";
 
@@ -26,6 +26,8 @@ export interface GlowEvent {
   /** Difference between the highest and lowest model score. */
   spread: number;
   aod: number | null;
+  /** Model-mean wind at each cloud layer over the observer when the glow peaks. */
+  wind: Record<WindLayer, Wind>;
   models: Record<ModelId, GlowModelResult>;
 }
 

@@ -110,6 +110,55 @@ export async function fetchCloudForecast(points: LatLon[]): Promise<CloudForecas
   };
 }
 
+/** Pressure levels (hPa) whose wind carries the low, mid and high cloud layers. */
+export const WIND_LEVELS = { low: 850, mid: 600, high: 300 } as const;
+
+export type WindLayer = keyof typeof WIND_LEVELS;
+
+/** Where the air moves, m/s toward the east and toward the north. */
+export interface Wind {
+  east: number;
+  north: number;
+}
+
+export interface WindForecast {
+  time: number[];
+  models: Record<ModelId, Record<WindLayer, Wind[]>>;
+}
+
+/** Hourly wind at the cloud layers over one point. */
+export async function fetchWindForecast(point: LatLon): Promise<WindForecast> {
+  const levels = Object.values(WIND_LEVELS);
+  const url = new URL(FORECAST_ENDPOINT);
+  url.search = new URLSearchParams({
+    ...coordinateParams([point]),
+    hourly: levels.flatMap(level => [`wind_speed_${level}hPa`, `wind_direction_${level}hPa`]).join(","),
+    models: CLOUD_MODELS.map(model => model.winds).join(","),
+    forecast_days: String(FORECAST_DAYS),
+    wind_speed_unit: "ms",
+    timezone: "auto",
+    timeformat: "unixtime",
+  }).toString();
+
+  const [body] = pointsOf(pointSchema).parse(await getJson(url, FORECAST_REVALIDATE_SECONDS));
+  const winds = (model: string, level: number) => {
+    const speeds = requireSeries(body.hourly, `wind_speed_${level}hPa_${model}`);
+    const directions = requireSeries(body.hourly, `wind_direction_${level}hPa_${model}`);
+    // Meteorological direction is where the wind blows from.
+    return speeds.map((speed, index) => {
+      const from = directions[index] * (Math.PI / 180);
+      return { east: -speed * Math.sin(from), north: -speed * Math.cos(from) };
+    });
+  };
+  return {
+    time: body.hourly.time.map(seconds => seconds * 1000),
+    models: Object.fromEntries(CLOUD_MODELS.map(model => [
+      model.id,
+      Object.fromEntries(Object.entries(WIND_LEVELS).map(([layer, level]) => [layer, winds(model.winds, level)])),
+    ])) as WindForecast["models"],
+  };
+}
+
 export interface AerosolForecast {
   time: number[];
   /** Aerosol optical depth at 550 nm from CAMS; null beyond the CAMS run. */

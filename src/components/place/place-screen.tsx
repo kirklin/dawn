@@ -1,20 +1,24 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import type { HeroContent } from "./place-title";
+import type { TimeRange } from "~/lib/astro/constants";
 import type { SunYear } from "~/lib/astro/sun";
 import type { GlowEvent, PlaceForecast } from "~/lib/forecast/types";
 import type { SavedPlace } from "~/lib/places/store";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNow } from "~/components/ios/use-now";
 import { useScrollChrome } from "~/components/ios/use-scroll-chrome";
 import { useSwipePaging } from "~/components/ios/use-swipe-paging";
+import { ForecastSky } from "~/components/sky/forecast-sky";
 import { rgbChannels, skyColors } from "~/components/sky/palette";
-import { SkyBackground } from "~/components/sky/sky-background";
-import { dayAt, eventId, hourAt, nextGlowEvent, nextSunCrossing, sunAltitudeAt } from "~/lib/forecast/selectors";
+import { quietSkyParams, skyParams } from "~/components/sky/sky-params";
+import { dayAt, eventId, GLOW_LINGER_MS, nextGlowEvent, nextSunCrossing } from "~/lib/forecast/selectors";
 import { formatClock, formatScore } from "~/lib/format";
 import { useRouter } from "~/lib/i18n/navigation";
 import { addPlace, locationStore, placeHref, placeKey, placePages, placesStore, useHydrated, useStore } from "~/lib/places/store";
+import { DAY_MS } from "~/lib/time/zoned";
 import { cn } from "~/lib/utils";
 import { AerosolCard } from "./cards/aerosol-card";
 import { AnalysisCard } from "./cards/analysis-card";
@@ -57,6 +61,7 @@ export function PlaceScreen({ place, current, preview, forecast, year, renderedA
 
   const rootRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLElement>(null);
+  const cardsRef = useRef<HTMLElement>(null);
   useScrollChrome(rootRef, barRef);
 
   const hydrated = useHydrated();
@@ -89,23 +94,53 @@ export function PlaceScreen({ place, current, preview, forecast, year, renderedA
   const selected = forecast.events.find(event => eventId(event) === selectedId) ?? nextEvent;
 
   const today = dayAt(forecast.days, now);
-  const altitude = sunAltitudeAt(forecast.days, now);
-  const hour = hourAt(forecast.hours, now);
-  if (!today || altitude === null || !hour) {
+  if (!today) {
     throw new Error(`The forecast made at ${new Date(forecast.generatedAt).toISOString()} no longer covers the current time`);
   }
-  const colors = skyColors(altitude, hour.cloud);
   const sunKind = nextSunCrossing(forecast.days, now)?.kind ?? "sunset";
 
-  const hero = nextEvent && {
-    level: glow(`level.${nextEvent.level}`),
-    day: dayOf(nextEvent),
-    event: glow(`event.${nextEvent.kind}`),
-    score: formatScore(nextEvent.score),
-  };
-  const times = today.sunrise !== null && today.sunset !== null
-    ? t("heroTimes", { sunrise: formatClock(today.sunrise, timezone), sunset: formatClock(today.sunset, timezone) })
-    : null;
+  const sky = useMemo(
+    () => (selected ? skyParams(selected, forecast) : quietSkyParams(forecast.lat, forecast.lon)),
+    [selected, forecast],
+  );
+  const [low, mid, high] = sky.cover[0];
+  const tint = skyColors(sky.sun * (180 / Math.PI), 1 - (1 - low) * (1 - mid) * (1 - high));
+
+  let hero: HeroContent | null = null;
+  let compact: string | null = null;
+  if (selected) {
+    const level = glow(`level.${selected.level}`);
+    const event = glow(`event.${selected.kind}`);
+    const until = selected.time - now;
+    let heading = t("hero.heading", { day: dayOf(selected), event, time: formatClock(selected.time, timezone) });
+    if (until > 0 && until < DAY_MS) {
+      heading += ` · ${t("hero.countdown", { duration: labels.duration(until) })}`;
+    } else if (until <= 0 && until > -GLOW_LINGER_MS) {
+      heading += ` · ${t("hero.now")}`;
+    }
+
+    const day = forecast.days.find(entry => entry.date === selected.date);
+    if (!day) {
+      throw new Error(`No sun day for the glow event on ${selected.date}`);
+    }
+    const range = (value: TimeRange | null) =>
+      value ? `${formatClock(value[0], timezone)}–${formatClock(value[1], timezone)}` : "--";
+    const golden = { label: t("golden.golden"), value: range(selected.kind === "sunset" ? day.goldenEvening : day.goldenMorning) };
+    const blue = { label: t("golden.blue"), value: range(selected.kind === "sunset" ? day.blueEvening : day.blueMorning) };
+
+    hero = {
+      heading,
+      level,
+      score: selected.score,
+      meter: t("hero.meter", { score: formatScore(selected.score) }),
+      models: t("analysis.models", { ecmwf: formatScore(selected.models.ecmwf.score), gfs: formatScore(selected.models.gfs.score) }),
+      facts: [
+        { label: t("hero.direction"), value: labels.azimuth(selected.azimuth) },
+        ...(selected.kind === "sunset" ? [golden, blue] : [blue, golden]),
+      ],
+    };
+    compact = t("compact", { level, day: dayOf(selected), event });
+  }
 
   const addActions = adding
     ? {
@@ -121,19 +156,13 @@ export function PlaceScreen({ place, current, preview, forecast, year, renderedA
     <div
       ref={rootRef}
       className={cn("relative min-h-dvh", adding ? "pb-[calc(env(safe-area-inset-bottom)+16px)]" : "pb-[calc(env(safe-area-inset-bottom)+66px)]")}
-      style={{ "--scroll": 0, "--pin": "0px", "--sky-card": rgbChannels(colors.card) } as CSSProperties}
+      style={{ "--scroll": 0, "--pin": "0px", "--sky-card": rgbChannels(tint.card) } as CSSProperties}
     >
-      <SkyBackground altitude={altitude} cloud={hour.cloud} />
-      <PlaceTitleBar
-        ref={barRef}
-        name={place.name}
-        current={current}
-        compact={hero && t("compact", hero)}
-        actions={addActions}
-      />
-      <PlaceHero level={hero?.level ?? null} line={hero && t("heroLine", hero)} times={times} />
+      <ForecastSky params={sky} fallback={tint} horizonRef={cardsRef} />
+      <PlaceTitleBar ref={barRef} name={place.name} current={current} compact={compact} actions={addActions} />
+      <PlaceHero content={hero} />
 
-      <main className="mx-auto grid max-w-xl grid-cols-2 gap-3 px-4">
+      <main ref={cardsRef} className="mx-auto grid max-w-xl grid-cols-2 gap-3 px-4">
         <HourlyCard forecast={forecast} now={now} summary={summary} />
         {forecast.events.length > 0 && (
           <GlowForecastCard

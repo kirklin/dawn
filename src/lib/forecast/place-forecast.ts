@@ -1,6 +1,6 @@
 import type { CloudLayers } from "./glow";
 import type { ModelId } from "./models";
-import type { CloudForecast } from "./open-meteo";
+import type { CloudForecast, Wind, WindLayer } from "./open-meteo";
 import type { GlowEvent, GlowEventKind, GlowModelResult, ObserverHour, PlaceForecast } from "./types";
 import type { SunYear } from "~/lib/astro/sun";
 import type { LatLon } from "~/lib/geo/coordinates";
@@ -11,7 +11,7 @@ import { addDays, MINUTE_MS, zonedDateKey } from "~/lib/time/zoned";
 import { glowLevel, scoreGlow } from "./glow";
 import { FORECAST_DAYS, MODEL_IDS, PATH_DISTANCES_KM } from "./models";
 import { nightOutlook } from "./night";
-import { fetchAerosolForecast, fetchCloudForecast, fetchModelRuns } from "./open-meteo";
+import { fetchAerosolForecast, fetchCloudForecast, fetchModelRuns, fetchWindForecast, WIND_LEVELS } from "./open-meteo";
 import { requireValueAt, valueAt } from "./series";
 
 /** Clouds catch the most color shortly after sunset and before sunrise. */
@@ -50,9 +50,10 @@ export async function getPlaceForecast(location: LatLon, now = Date.now()): Prom
     }
   }
 
-  const [clouds, aerosols, runs] = await Promise.all([
+  const [clouds, aerosols, winds, runs] = await Promise.all([
     fetchCloudForecast(points),
     fetchAerosolForecast(points),
+    fetchWindForecast(origin),
     fetchModelRuns(),
   ]);
 
@@ -83,10 +84,17 @@ export async function getPlaceForecast(location: LatLon, now = Date.now()): Prom
     };
   };
 
+  const windAt = (layer: WindLayer, at: number): Wind => {
+    const component = (pick: (wind: Wind) => number) => mean(MODEL_IDS.map(model =>
+      requireValueAt(winds.time, winds.models[model][layer].map(pick), at, `${model} ${layer} cloud wind`)));
+    return { east: component(wind => wind.east), north: component(wind => wind.north) };
+  };
+
   const glowEvent = (kind: GlowEventKind, date: string, time: number, azimuth: number): GlowEvent => {
     const scoredAt = time + (kind === "sunset" ? 1 : -1) * GLOW_PEAK_OFFSET_MINUTES * MINUTE_MS;
     const indexes = PATH_DISTANCES_KM.map((_, distanceIndex) => pointIndex(kind, distanceIndex));
     const aod = indexes.map(index => valueAt(aerosols.time, aerosols.points[index], scoredAt));
+    const wind = Object.fromEntries(Object.keys(WIND_LEVELS).map(layer => [layer, windAt(layer as WindLayer, scoredAt)])) as Record<WindLayer, Wind>;
 
     const models = Object.fromEntries(MODEL_IDS.map((model) => {
       const section = indexes.map(index => layersAt(clouds, index, model, scoredAt));
@@ -107,6 +115,7 @@ export async function getPlaceForecast(location: LatLon, now = Date.now()): Prom
       level: glowLevel(score),
       spread: Math.max(...scores) - Math.min(...scores),
       aod: models[MODEL_IDS[0]].factors.aod,
+      wind,
       models,
     };
   };
