@@ -20,7 +20,13 @@ twilit.cc is a mobile web app that tells you whether the next sunrise or sunset 
 
 ![sunsetbot.top 截图](.github/assets/sunsetbot-origin.png)
 
+<p align="center"><sub>sunsetbot.top 曾经的界面与晚霞分析记录。</sub></p>
+
+我们想重新做的，不只是一个晚霞预测工具，也是一种重新抬头看天空的方式。每一次日出与日落都短暂而具体，但它们同样值得被记录、被等待。
+
 ![Pale Blue Dot inspiration](.github/assets/pale-blue-dot-inspiration.jpg)
+
+<p align="center"><sub>“我们都生活在这颗微小而脆弱的蓝点上。”这也是 twilit.cc 想守护的观看方式：从日常的天空出发，重新感受我们所在的世界。</sub></p>
 
 <p align="center">
   <img src=".github/assets/screens.png" alt="New York at midday and in the sunset glow, and the cards further down the page" width="100%">
