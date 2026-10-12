@@ -1,12 +1,12 @@
 <p align="center">
-  <img src=".github/assets/banner.png" alt="Twilit 朝暮, with three phones showing New York at midday, in the sunset glow and at night" width="100%">
+  <img src=".github/assets/banner.png?v=2" alt="Dawn 黎明守护者, with three phones showing New York at midday, in the sunset glow and at night" width="100%">
 </p>
 
-# Twilit
+# Dawn 黎明守护者
 
 **Sunrise and sunset glow forecast for the next four days.**
 
-Twilit (朝暮) is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
+Dawn 黎明守护者 is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
 
 <p align="center">
   <img src=".github/assets/screens.png" alt="New York at midday and in the sunset glow, and the cards further down the page" width="100%">

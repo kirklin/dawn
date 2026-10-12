@@ -6,7 +6,7 @@ const PHOTON_SEARCH = "https://photon.komoot.io/api/";
 const OPEN_METEO_GEOCODING = "https://geocoding-api.open-meteo.com/v1/search";
 const NOMINATIM_REVERSE = "https://nominatim.openstreetmap.org/reverse";
 /** Nominatim's usage policy asks every application to identify itself; stock library user agents are blocked. */
-const NOMINATIM_HEADERS = { "User-Agent": "Twilit/0.1 (+https://github.com/kirklin/twilit)" };
+const NOMINATIM_HEADERS = { "User-Agent": "DawnKrik/0.1 (+https://github.com/kirklin/twilit)" };
 const REVALIDATE_SECONDS = 24 * 3600;
 
 /** Settlements, administrative areas and scenic features. */
