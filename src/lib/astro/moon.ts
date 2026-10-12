@@ -1,5 +1,5 @@
 import type { Observer } from "astronomy-engine";
-import { Body, Equator, Horizon, Illumination, MoonPhase, NextMoonQuarter, SearchMoonQuarter, SearchRiseSet } from "astronomy-engine";
+import { Body, Illumination, MoonPhase, NextMoonQuarter, SearchMoonQuarter, SearchRiseSet } from "astronomy-engine";
 
 export type MoonPhaseName
   = | "new"
@@ -80,9 +80,4 @@ export function upcomingQuarters(time: number, count: number): MoonQuarterEvent[
 export function nextMoonEvent(observer: Observer, direction: 1 | -1, time: number, limitDays: number) {
   const event = SearchRiseSet(Body.Moon, observer, direction, new Date(time), limitDays);
   return event ? event.date.getTime() : null;
-}
-
-export function moonAltitude(observer: Observer, time: number) {
-  const equatorial = Equator(Body.Moon, new Date(time), observer, true, true);
-  return Horizon(new Date(time), observer, equatorial.ra, equatorial.dec, "normal").altitude;
 }

@@ -10,6 +10,12 @@ const METADATA_REVALIDATE_SECONDS = 10 * 60;
 
 const CLOUD_VARIABLES = ["cloud_cover", "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high", "precipitation"] as const;
 
+/**
+ * Open-Meteo starts its hours at local midnight of its own today, and a response cached before
+ * midnight is still served once after it; one extra day keeps the last forecast day covered.
+ */
+const FETCH_DAYS = String(FORECAST_DAYS + 1);
+
 const hourlySchema = z.object({ time: z.array(z.number()) }).catchall(z.array(z.number().nullable()));
 
 const pointSchema = z.object({
@@ -85,7 +91,7 @@ export async function fetchCloudForecast(points: LatLon[]): Promise<CloudForecas
     ...coordinateParams(points),
     hourly: CLOUD_VARIABLES.join(","),
     models: CLOUD_MODELS.map(model => model.openMeteo).join(","),
-    forecast_days: String(FORECAST_DAYS),
+    forecast_days: FETCH_DAYS,
     timezone: "auto",
     timeformat: "unixtime",
   }).toString();
@@ -134,7 +140,7 @@ export async function fetchWindForecast(point: LatLon): Promise<WindForecast> {
     ...coordinateParams([point]),
     hourly: levels.flatMap(level => [`wind_speed_${level}hPa`, `wind_direction_${level}hPa`]).join(","),
     models: CLOUD_MODELS.map(model => model.winds).join(","),
-    forecast_days: String(FORECAST_DAYS),
+    forecast_days: FETCH_DAYS,
     wind_speed_unit: "ms",
     timezone: "auto",
     timeformat: "unixtime",
@@ -171,7 +177,7 @@ export async function fetchAerosolForecast(points: LatLon[]): Promise<AerosolFor
     ...coordinateParams(points),
     hourly: "aerosol_optical_depth",
     domains: "cams_global",
-    forecast_days: String(FORECAST_DAYS),
+    forecast_days: FETCH_DAYS,
     timezone: "auto",
     timeformat: "unixtime",
   }).toString();

@@ -1,40 +1,23 @@
-import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "~/lib/utils";
 
 interface SkyCardProps {
   title: ReactNode;
-  icon: LucideIcon;
+  /** Shown at the right end of the title row. */
+  accessory?: ReactNode;
   wide?: boolean;
-  className?: string;
-  bodyClassName?: string;
-  onClick?: () => void;
   children: ReactNode;
 }
 
-/** Frosted card whose header pins under the compact title while its body scrolls away beneath it. */
-export function SkyCard({ title, icon: Icon, wide, className, bodyClassName, onClick, children }: SkyCardProps) {
-  const content = (
-    <>
-      <header data-card-header className="sticky top-(--pin) z-[1] flex h-9 items-center gap-1.5 px-4 text-[13px] font-medium text-white/60">
-        <Icon className="size-3.5 shrink-0" strokeWidth={2.4} />
-        <span className="truncate">{title}</span>
-      </header>
-      <div data-card-body className={cn("px-4 pb-4", bodyClassName)}>
-        {children}
-      </div>
-    </>
-  );
-
+/** Card over the sky: a quiet title, then the content; it slides under the pinned title as the page scrolls. */
+export function SkyCard({ title, accessory, wide, children }: SkyCardProps) {
   return (
-    <section data-card className={cn("sky-card relative", wide ? "col-span-2" : "col-span-1", className)}>
-      {onClick
-        ? (
-            <button type="button" className="block w-full text-left" onClick={onClick}>
-              {content}
-            </button>
-          )
-        : content}
+    <section data-card className={cn("sky-material flex flex-col rounded-[22px] p-4", wide ? "col-span-2" : "col-span-1")}>
+      <header className="flex h-5 items-center justify-between gap-3 text-[15px] leading-5 text-white/60">
+        <h2 className="truncate">{title}</h2>
+        {accessory}
+      </header>
+      {children}
     </section>
   );
 }

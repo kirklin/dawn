@@ -22,7 +22,7 @@ export function SearchResults({ search }: { search: SearchState }) {
     <ul className="mt-1">
       {search.results.map(result => (
         <li key={`${result.lat},${result.lon},${result.name}`} className="border-b border-white/10">
-          <Link href={placeHref(result, { preview: true })} className="block py-3">
+          <Link href={placeHref(result)} className="block py-3">
             <p className="text-[17px]">{result.name}</p>
             {result.detail && <p className="mt-0.5 text-[13px] text-white/60">{result.detail}</p>}
           </Link>

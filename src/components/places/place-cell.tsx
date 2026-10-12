@@ -8,7 +8,7 @@ import { SwipeRow } from "~/components/ios/swipe-row";
 import { useNow } from "~/components/ios/use-now";
 import { useLabels } from "~/components/place/use-labels";
 import { rgb, skyColors } from "~/components/sky/palette";
-import { formatClock } from "~/lib/format";
+import { formatClock, formatScore } from "~/lib/format";
 import { Link } from "~/lib/i18n/navigation";
 import { placeHref } from "~/lib/places/store";
 import { usePlaceSummary } from "./use-place-summary";
@@ -20,12 +20,12 @@ interface CellLayoutProps {
   subtitle: string;
   level: string;
   footnote: ReactNode;
-  times: string;
+  score: string;
   background: string;
 }
 
-/** The iOS Weather list cell: name and time on the left, the headline value on the right, details below. */
-function CellLayout({ title, subtitle, level, footnote, times, background }: CellLayoutProps) {
+/** The list cell: name and local time on the left, the next glow's rating on the right, when it comes below. */
+function CellLayout({ title, subtitle, level, footnote, score, background }: CellLayoutProps) {
   return (
     <div className="flex h-[118px] flex-col justify-between px-4 py-3" style={{ background }}>
       <div className="flex items-start justify-between gap-3">
@@ -35,9 +35,9 @@ function CellLayout({ title, subtitle, level, footnote, times, background }: Cel
         </div>
         <p className="shrink-0 text-[40px] leading-none font-light">{level}</p>
       </div>
-      <div className="flex items-end justify-between gap-3 text-[15px] font-medium">
+      <div className="flex items-end justify-between gap-3 text-[15px] font-medium tabular-nums">
         <p className="min-w-0 truncate">{footnote}</p>
-        <p className="shrink-0 tabular-nums">{times}</p>
+        <p className="shrink-0">{score}</p>
       </div>
     </div>
   );
@@ -49,7 +49,7 @@ function SummaryCell({ place, current, summary }: { place: SavedPlace; current: 
   const glow = useTranslations("Glow");
   const now = useNow(0);
   const labels = useLabels(summary.timezone, now);
-  const { nextEvent, sunrise, sunset } = summary;
+  const { nextEvent } = summary;
   const colors = summary.sunAltitude === null ? null : skyColors(summary.sunAltitude, summary.cloud ?? 0);
 
   return (
@@ -58,11 +58,13 @@ function SummaryCell({ place, current, summary }: { place: SavedPlace; current: 
       subtitle={current ? place.name : formatClock(now, summary.timezone)}
       level={nextEvent ? glow(`level.${nextEvent.level}`) : "--"}
       footnote={nextEvent
-        ? `${labels.day(nextEvent.date, nextEvent.time)}${glow(`event.${nextEvent.kind}`)} ${formatClock(nextEvent.time, summary.timezone)}`
+        ? p("hero.event", {
+            day: labels.day(nextEvent.date, nextEvent.time),
+            event: glow(`event.${nextEvent.kind}`),
+            time: formatClock(nextEvent.time, summary.timezone),
+          })
         : p("noEvents")}
-      times={sunrise !== null && sunset !== null
-        ? t("sunTimes", { sunrise: formatClock(sunrise, summary.timezone), sunset: formatClock(sunset, summary.timezone) })
-        : ""}
+      score={nextEvent ? p("hero.score", { score: formatScore(nextEvent.score) }) : ""}
       background={colors ? `linear-gradient(180deg, ${rgb(colors.top)} 0%, ${rgb(colors.bottom)} 100%)` : PENDING_BACKGROUND}
     />
   );
@@ -90,7 +92,7 @@ export function PlaceCell({ place, current, onDelete }: PlaceCellProps) {
                 subtitle={current ? place.name : place.detail}
                 level="--"
                 footnote={state ? <span className="text-white/70">{p("error.title")}</span> : ""}
-                times=""
+                score=""
                 background={PENDING_BACKGROUND}
               />
             )}

@@ -2,7 +2,7 @@
 
 import { Navigation } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
 import { locationStore, placeKey, placesStore, removePlace, useHydrated, useStore } from "~/lib/places/store";
 import { cn } from "~/lib/utils";
 import { PlaceCell } from "./place-cell";
@@ -10,6 +10,16 @@ import { SearchField } from "./search-field";
 import { SearchResults } from "./search-results";
 import { useLocate } from "./use-locate";
 import { usePlaceSearch } from "./use-place-search";
+
+/** The add button on a place page links here with #search, to start a search right away. */
+function subscribeToHash(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  return () => window.removeEventListener("hashchange", onChange);
+}
+
+function isSearchLinked() {
+  return window.location.hash === "#search";
+}
 
 function LocationRow({ locating, onLocate }: { locating: boolean; onLocate: () => void }) {
   const t = useTranslations("Places");
@@ -45,7 +55,8 @@ export function PlacesScreen() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
-  const active = focused || query !== "";
+  const linked = useSyncExternalStore(subscribeToHash, isSearchLinked, () => false);
+  const active = focused || query !== "" || linked;
   const search = usePlaceSearch(query);
 
   const refreshLocation = useEffectEvent(() => {
@@ -57,10 +68,19 @@ export function PlacesScreen() {
     refreshLocation();
   }, []);
 
+  useEffect(() => {
+    if (linked) {
+      inputRef.current?.focus();
+    }
+  }, [linked]);
+
   const cancel = () => {
     setQuery("");
     setFocused(false);
     inputRef.current?.blur();
+    if (linked) {
+      window.location.hash = "";
+    }
   };
 
   return (
@@ -100,10 +120,10 @@ export function PlacesScreen() {
                 </li>
               ))}
             </ul>
-            {places.length === 0 && <p className="mt-6 text-center text-[15px] text-white/60">{t("empty")}</p>}
-            <footer className="mt-10 space-y-1 text-center text-[13px] text-white/45">
-              <p>{footer("data")}</p>
-              <p>{footer("places")}</p>
+            {places.length === 0 && <p className="mt-4 text-[15px] text-white/60">{t("empty")}</p>}
+            <footer className="mt-8 text-[13px] leading-[18px] text-white/50">
+              <p>{footer("weather")}</p>
+              <p>{footer("map")}</p>
             </footer>
           </>
         )}

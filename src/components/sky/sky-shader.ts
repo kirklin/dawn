@@ -12,6 +12,9 @@ void main() {
 const GEOMETRY = `
 /** How far the camera looks up, in radians; it puts the horizon where the layout wants it. */
 uniform float u_pitch;
+/** Sun altitude, and its azimuth from the direction of view, positive to the right, in radians. */
+uniform float u_sun;
+uniform float u_sunAzimuth;
 
 const float PI = 3.14159265;
 const float R = 6371.0;
@@ -20,7 +23,12 @@ const float LOW = 1.6;
 const float MID = 4.5;
 const float HIGH = 9.0;
 
-/** View direction through a point of the canvas, 0–1 from the bottom left, looking toward the sun's azimuth (+z). */
+/** Unit vector toward the sun, in the frame of the view (+z ahead, +x right, +y up). */
+vec3 sunDirection() {
+  return vec3(sin(u_sunAzimuth) * cos(u_sun), sin(u_sun), cos(u_sunAzimuth) * cos(u_sun));
+}
+
+/** View direction through a point of the canvas, 0–1 from the bottom left, looking along +z. */
 vec3 viewDirection(vec2 screen, vec2 view) {
   vec2 uv = (screen - 0.5) * vec2(view.x / view.y, 1.0);
   vec3 camera = normalize(vec3(uv * 2.0, 1.0));
@@ -48,7 +56,6 @@ precision highp float;
 
 uniform vec2 u_view;
 uniform vec2 u_size;
-uniform float u_sun;
 uniform float u_transmission;
 uniform float u_aod;
 uniform float u_wet;
@@ -178,7 +185,7 @@ vec4 layerLight(vec3 origin, vec3 dir, vec3 sun, float betaM, float height) {
 void main() {
   vec3 dir = viewDirection(gl_FragCoord.xy / u_size, u_view);
   vec3 origin = vec3(0.0, R + EYE, 0.0);
-  vec3 sun = vec3(0.0, sin(u_sun), cos(u_sun));
+  vec3 sun = sunDirection();
   float betaM = max(u_aod, 0.02) / H_M;
 
   vec3 skyDir = normalize(vec3(dir.x, max(dir.y, 0.004), dir.z));
@@ -210,7 +217,6 @@ uniform sampler2D u_lowLight;
 uniform sampler2D u_midLight;
 uniform sampler2D u_highLight;
 uniform sampler2D u_noise;
-uniform float u_sun;
 uniform vec3 u_cover[8];
 uniform float u_wet;
 /** Kilometres to noise tiles for each component, and where the wind has carried it. */
@@ -231,6 +237,15 @@ const float GRADIENT_SPREAD = ${NOISE_STATS.gradientSpread.toFixed(3)};
 const float CELLULAR_MEAN = ${NOISE_STATS.cellularMean.toFixed(3)};
 const float CELLULAR_SPREAD = ${NOISE_STATS.cellularSpread.toFixed(3)};
 const float CLOUD_BRIGHTNESS = 1.1;
+/** Exposure at the top of the canvas relative to the horizon. */
+const float GRADUATED_TOP = 0.35;
+/** Exposure with the risen sun in the middle of the frame, relative to the sun out of it. */
+const float SUN_IN_FRAME = 0.45;
+/** The night, already exposed: a deep blue sky lighter toward the horizon, faint clouds, black hills. */
+const vec3 NIGHT_ZENITH = vec3(0.0035, 0.0055, 0.017);
+const vec3 NIGHT_HORIZON = vec3(0.011, 0.014, 0.032);
+const vec3 NIGHT_CLOUD = vec3(0.016, 0.019, 0.032);
+const vec3 NIGHT_GROUND = vec3(0.0012, 0.0013, 0.002);
 
 vec3 coverAt(float distance) {
   if (distance <= 0.0) {
@@ -369,9 +384,10 @@ Cloud cumuliform(int base, vec2 position, vec2 dx, vec2 dy, float cover, float s
     return Cloud(vec3(0.0), 0.0);
   }
 
-  // Sunlight comes in from the sunward side (+z) almost level, crossing the cloudlets in its way...
+  // A low sun's light comes in almost level from its side, crossing the cloudlets in its way...
+  vec2 toward = vec2(sin(u_sunAzimuth), cos(u_sunAzimuth));
   float rest = masses + detail - cut;
-  vec2 sunward = cellMap * vec2(0.0, shape.shadowStep);
+  vec2 sunward = cellMap * toward * shape.shadowStep;
   float depth = max(excess, 0.0) * 0.5 * shape.shadowStep;
   for (int i = 1; i <= 3; i++) {
     float ahead = textureGrad(u_noise, cellUv + sunward * float(i * (i + 1) / 2), gx * 2.0, gy * 2.0).g;
@@ -380,18 +396,20 @@ Cloud cumuliform(int base, vec2 position, vec2 dx, vec2 dy, float cover, float s
   // ...and the whole masses beyond them.
   float massDepth = 0.0;
   for (int i = 1; i <= 3; i++) {
-    vec4 ahead = noiseAt(base + 1, position + vec2(0.0, shape.massStep * float(i * i)), vec2(0.0), dx, dy, 3.0);
+    vec4 ahead = noiseAt(base + 1, position + toward * shape.massStep * float(i * i), vec2(0.0), dx, dy, 3.0);
     float aheadMasses = fieldKept.r * (ahead.r - 0.5) + 0.5 * fieldKept.b * (ahead.b - 0.5);
     massDepth += max(aheadMasses - cut, 0.0) * shape.massStep * float(2 * i - 1);
   }
   float lit = (0.8 * exp(-depth * 14.0) + 0.2 * exp(-depth * 2.0)) * (0.35 + 0.65 * exp(-massDepth * 2.5));
+  // A high sun lights the clouds from above, so seen from below they darken with their thickness.
+  lit = mix(lit, 0.3 + 0.7 * exp(-max(excess, 0.0) * 6.0), smoothstep(0.15, 0.6, sin(u_sun)));
 
   // Relief: where the lumps thin out toward the sun, their surface faces it.
-  vec2 reliefUv = cellUv + cellMap * vec2(0.0, shape.reliefStep);
+  vec2 reliefUv = cellUv + cellMap * toward * shape.reliefStep;
   float lobesAhead = shape.cells * shape.lobes * lobesKept
     * (textureGrad(u_noise, LOBE_TURN * reliefUv + LOBE_OFFSET, LOBE_TURN * gx, LOBE_TURN * gy).g - CELLULAR_MEAN);
   float detailAhead = shape.detail * detailKeptA
-    * (textureGrad(u_noise, detailUv + detailMap * vec2(0.0, shape.reliefStep), detailGx, detailGy).a - 0.5);
+    * (textureGrad(u_noise, detailUv + detailMap * toward * shape.reliefStep, detailGx, detailGy).a - 0.5);
   float relief = clamp(1.0 + RELIEF * (lobes + coarseDetail - lobesAhead - detailAhead), 0.55, 1.5);
   float core = smoothstep(0.0, 0.3, excess);
 
@@ -436,6 +454,22 @@ Cloud cirrus(vec2 position, vec2 dx, vec2 dy, float cover, float sinElevation, L
   return Cloud((direct + diffuse) * (1.0 - 0.6 * u_wet) + light.sky * (1.0 - light.sun.a), alpha);
 }
 
+/**
+ * Stars on a grid of cells about a third of a degree across, one in thirty holding a star at a
+ * random spot, most of them faint and a few bright, white to warm.
+ */
+vec3 stars(vec3 dir) {
+  vec2 cell = vec2(atan(dir.x, dir.z), asin(dir.y)) * 180.0;
+  vec2 id = floor(cell);
+  if (hash(id) < 0.967) {
+    return vec3(0.0);
+  }
+  vec2 spot = vec2(hash(id + 3.1), hash(id + 7.3)) * 0.7 + 0.15;
+  float glint = smoothstep(0.28, 0.0, length(fract(cell) - spot));
+  float brightness = pow(hash(id + 11.7), 5.0) * 0.9 + 0.04;
+  return mix(vec3(0.75, 0.82, 1.0), vec3(1.0, 0.88, 0.74), hash(id + 19.1)) * glint * brightness;
+}
+
 /** Smooth 1D noise along the horizon from one texture row. */
 float ridge(float azimuth, float row, float scale) {
   return 0.6 * textureLod(u_noise, vec2(azimuth * scale, row), 0.0).r
@@ -451,7 +485,7 @@ vec3 tonemap(vec3 x) {
 void main() {
   vec2 screen = gl_FragCoord.xy / u_view;
   vec3 dir = viewDirection(screen, u_view);
-  vec3 sun = vec3(0.0, sin(u_sun), cos(u_sun));
+  vec3 sun = sunDirection();
 
   // Positions on each layer and their screen derivatives, taken before any branch.
   vec2 lowPosition = (dir * layerDistance(dir, LOW)).xz + u_seed;
@@ -465,6 +499,7 @@ void main() {
   vec2 highDy = dFdy(highPosition);
 
   vec3 sky = texture(u_sky, screen).rgb;
+  float horizon = 0.5 - 0.5 * tan(u_pitch);
   float elevation = asin(dir.y);
   // Two ranges of hills, neither higher than 0.032 rad.
   float farRidge = -1.0;
@@ -476,14 +511,17 @@ void main() {
   }
 
   vec3 color;
+  // After dusk: the night sky's own glow and stars, clouds as faint silhouettes, the hills darker still.
+  vec3 night;
   if (elevation < max(nearRidge, 0.0)) {
     color = sky * 0.12 + vec3(0.0004, 0.0004, 0.0006);
+    night = NIGHT_GROUND;
   } else if (elevation < farRidge) {
     color = sky * 0.45 + vec3(0.001, 0.001, 0.0015);
+    night = NIGHT_GROUND * 1.6;
   } else {
     // A cloud base sees little of the sky: the dark ground below and the glow along the horizon.
     vec3 zenith = texture(u_sky, vec2(0.5, 1.0)).rgb;
-    float horizon = 0.5 - 0.5 * tan(u_pitch);
     vec3 belt = texture(u_sky, vec2(screen.x, horizon + 0.03)).rgb;
     vec3 ambient = zenith * 0.4 + belt * 0.04;
     float mu = dot(dir, sun);
@@ -501,10 +539,20 @@ void main() {
     Light lowLight = Light(texture(u_lowLight, screen), zenith * 0.28 + belt * 0.1, sky, phase);
     Cloud low = cumuliform(0, lowPosition, lowDx, lowDy, coverAt(lowPosition.y - u_seed.y).x, sinElevation, lowLight, Shape(0.08, 1.3, 0.6, 0.7, 0.4, 1.5, 0.1, 10.0));
     color = mix(color, low.color, low.alpha);
+
+    float coverage = 1.0 - (1.0 - high.alpha) * (1.0 - mid.alpha) * (1.0 - low.alpha);
+    vec3 nightSky = mix(NIGHT_HORIZON, NIGHT_ZENITH, smoothstep(0.0, 0.7, dir.y)) + stars(dir) * smoothstep(0.0, 0.12, dir.y);
+    night = mix(nightSky, NIGHT_CLOUD, coverage);
   }
 
-  float exposure = 5.5 * exp(-24.0 * clamp(u_sun, -0.1, 0.05));
-  vec3 mapped = tonemap(color * exposure);
+  // A graduated filter, as photographers hold over a bright sky: a stop and a half darker at the
+  // top, so the sky deepens to blue overhead and the text laid over it stays legible.
+  float graduated = mix(1.0, GRADUATED_TOP, smoothstep(horizon + 0.02, 1.0, screen.y));
+  // Metered like a camera: once the sun is up and in the frame, the exposure comes down so its glare
+  // does not wash out the sky; at sunset and in the glow after it the sun is already gone.
+  float sunInFrame = smoothstep(0.5, 0.97, dot(sun, vec3(0.0, sin(u_pitch), cos(u_pitch)))) * smoothstep(0.0, 0.08, u_sun);
+  float exposure = 5.5 * exp(-24.0 * clamp(u_sun, -0.1, 0.05)) * graduated * mix(1.0, SUN_IN_FRAME, sunInFrame);
+  vec3 mapped = tonemap(color * exposure + night * smoothstep(-0.03, -0.2, u_sun));
   // A photographic grade: a little more saturation than the film curve leaves.
   mapped = clamp(mix(vec3(dot(mapped, vec3(0.2126, 0.7152, 0.0722))), mapped, 1.2), 0.0, 1.0);
   mapped += (hash(gl_FragCoord.xy) - 0.5) / 255.0;

@@ -47,8 +47,8 @@ const LAYERS: readonly (readonly [NoiseComponent, NoiseComponent, NoiseComponent
 /** Where the horizon may sit, as a share of the canvas height from the top. */
 const HORIZON_RANGE = [0.35, 0.8] as const;
 
-const ATMOSPHERE_UNIFORMS = ["u_pitch", "u_view", "u_size", "u_sun", "u_transmission", "u_aod", "u_wet"] as const;
-const CLOUD_UNIFORMS = ["u_pitch", "u_view", "u_sun", "u_cover", "u_wet", "u_map", "u_shift", "u_seed", "u_anisotropy"] as const;
+const ATMOSPHERE_UNIFORMS = ["u_pitch", "u_view", "u_size", "u_sun", "u_sunAzimuth", "u_transmission", "u_aod", "u_wet"] as const;
+const CLOUD_UNIFORMS = ["u_pitch", "u_view", "u_sun", "u_sunAzimuth", "u_cover", "u_wet", "u_map", "u_shift", "u_seed", "u_anisotropy"] as const;
 const CLOUD_SAMPLERS = ["u_sky", "u_lowLight", "u_midLight", "u_highLight", "u_noise"] as const;
 
 function compile(gl: WebGL2RenderingContext, type: number, source: string) {
@@ -92,7 +92,8 @@ function noiseMap(component: NoiseComponent, wind: readonly [number, number]) {
 }
 
 export interface SkyRenderer {
-  setParams: (params: SkyParams) => void;
+  /** Morphs to `params`, or jumps straight there when `instant`, as while the time is being dragged. */
+  setParams: (params: SkyParams, instant: boolean) => void;
   /** Puts the horizon `top` CSS pixels below the top of the canvas. */
   setHorizon: (top: number) => void;
   resize: () => void;
@@ -183,6 +184,7 @@ export function createSkyRenderer(canvas: HTMLCanvasElement, initial: SkyParams,
     gl.uniform2f(locations.u_view, canvas.width, canvas.height);
     gl.uniform2f(locations.u_size, atmosphereSize[0], atmosphereSize[1]);
     gl.uniform1f(locations.u_sun, params.sun);
+    gl.uniform1f(locations.u_sunAzimuth, params.sunAzimuth);
     gl.uniform1f(locations.u_transmission, params.transmission);
     gl.uniform1f(locations.u_aod, params.aod);
     gl.uniform1f(locations.u_wet, params.wet);
@@ -227,6 +229,7 @@ export function createSkyRenderer(canvas: HTMLCanvasElement, initial: SkyParams,
     gl.uniform1f(locations.u_pitch, pitch());
     gl.uniform2f(locations.u_view, canvas.width, canvas.height);
     gl.uniform1f(locations.u_sun, params.sun);
+    gl.uniform1f(locations.u_sunAzimuth, params.sunAzimuth);
     gl.uniform3fv(locations.u_cover, params.cover.flat());
     gl.uniform1f(locations.u_wet, params.wet);
     gl.uniformMatrix2fv(locations.u_map, false, maps);
@@ -308,13 +311,13 @@ export function createSkyRenderer(canvas: HTMLCanvasElement, initial: SkyParams,
   schedule();
 
   return {
-    setParams(params) {
+    setParams(params, instant) {
       if (params === target) {
         return;
       }
-      from = shown;
+      from = instant ? params : shown;
       target = params;
-      morphStart = performance.now();
+      morphStart = instant ? -Infinity : performance.now();
       changed = true;
       schedule();
     },

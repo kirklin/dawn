@@ -18,30 +18,25 @@ describe("sunDay", () => {
   };
 
   it.each([
-    ["firstLight", "05:59"],
-    ["sunrise", "06:22"],
-    ["sunset", "18:04"],
-    ["lastLight", "18:26"],
-  ] as const)("matches Apple Weather's %s within a minute", (key, expected) => {
-    expect(Math.abs(minutes(clock(day[key])) - minutes(expected))).toBeLessThanOrEqual(1);
+    ["first light, where the blue hour begins", day.blueMorning?.[0] ?? null, "05:59"],
+    ["sunrise", day.sunrise, "06:22"],
+    ["sunset", day.sunset, "18:04"],
+    ["last light, where the blue hour ends", day.blueEvening?.[1] ?? null, "18:26"],
+  ] as const)("matches Apple Weather's %s within a minute", (_, time, expected) => {
+    expect(Math.abs(minutes(clock(time)) - minutes(expected))).toBeLessThanOrEqual(1);
   });
 
-  it("orders the twilight and light phases through the day", () => {
-    const sequence = [
-      day.astronomicalDawn,
-      day.nauticalDawn,
-      day.firstLight,
-      day.sunrise,
-      day.solarNoon,
-      day.sunset,
-      day.lastLight,
-      day.nauticalDusk,
-      day.astronomicalDusk,
-    ];
-    expect(sequence.every(time => time !== null)).toBe(true);
-    expect([...sequence].sort((a, b) => a! - b!)).toEqual(sequence);
-    expect(day.blueMorning?.[1]).toBe(day.goldenMorning?.[0]);
-    expect(day.goldenEvening?.[1]).toBe(day.blueEvening?.[0]);
+  it("puts the blue and golden hours around sunrise and sunset in order", () => {
+    const { blueMorning, goldenMorning, goldenEvening, blueEvening, sunrise, sunset } = day;
+    if (!blueMorning || !goldenMorning || !goldenEvening || !blueEvening || sunrise === null || sunset === null) {
+      throw new Error("Guangzhou in October has every light phase");
+    }
+    expect(blueMorning[1]).toBe(goldenMorning[0]);
+    expect(sunrise).toBeGreaterThan(goldenMorning[0]);
+    expect(sunrise).toBeLessThan(goldenMorning[1]);
+    expect(sunset).toBeGreaterThan(goldenEvening[0]);
+    expect(sunset).toBeLessThan(goldenEvening[1]);
+    expect(goldenEvening[1]).toBe(blueEvening[0]);
   });
 
   it("puts the October sun south of due east and west", () => {

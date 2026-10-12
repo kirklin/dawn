@@ -1,6 +1,5 @@
 import type { CloudLayers, GlowLevel, GlowResult } from "./glow";
 import type { ModelId } from "./models";
-import type { NightOutlook } from "./night";
 import type { ModelRuns, Wind, WindLayer } from "./open-meteo";
 import type { MoonQuarterEvent, MoonState } from "~/lib/astro/moon";
 import type { SunDay } from "~/lib/astro/sun";
@@ -23,8 +22,6 @@ export interface GlowEvent {
   /** Mean of the cloud models. */
   score: number;
   level: GlowLevel;
-  /** Difference between the highest and lowest model score. */
-  spread: number;
   aod: number | null;
   /** Model-mean wind at each cloud layer over the observer when the glow peaks. */
   wind: Record<WindLayer, Wind>;
@@ -33,19 +30,27 @@ export interface GlowEvent {
 
 export interface ObserverHour {
   time: number;
-  /** Model-mean cloud cover fractions. */
+  /** Model-mean total cloud cover, 0–1. */
   cloud: number;
-  low: number;
-  mid: number;
-  high: number;
-  precipitation: number;
-  aod: number | null;
 }
 
-export interface MoonDay {
-  date: string;
-  rise: number | null;
-  set: number | null;
+/** What the sky looks like toward the sunrise or sunset in one forecast hour, averaged over the cloud models. */
+export interface SkyHour {
+  time: number;
+  /** Low, mid and high cloud cover at each of PATH_DISTANCES_KM toward the sun. */
+  cover: [number, number, number][];
+  /** Share of the low sunlight that gets past cloud on its way in. */
+  transmission: number;
+  aod: number | null;
+  /** 0 when dry, toward 1 in heavy rain. */
+  wet: number;
+  wind: Record<WindLayer, Wind>;
+}
+
+/** The forecast sky hour by hour, looking along the sunrise or sunset azimuth. */
+export interface SkyTrack {
+  azimuth: number;
+  hours: SkyHour[];
 }
 
 export interface MoonOutlook {
@@ -53,7 +58,6 @@ export interface MoonOutlook {
   quarters: MoonQuarterEvent[];
   nextRise: number | null;
   nextSet: number | null;
-  days: MoonDay[];
 }
 
 export interface PlaceForecast {
@@ -66,6 +70,7 @@ export interface PlaceForecast {
   days: SunDay[];
   hours: ObserverHour[];
   events: GlowEvent[];
+  /** Absent where the sun neither rises nor sets in the coming days. */
+  tracks: Partial<Record<GlowEventKind, SkyTrack>>;
   moon: MoonOutlook;
-  night: NightOutlook | null;
 }

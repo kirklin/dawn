@@ -65,6 +65,11 @@ function smoothstep(edge0: number, edge1: number, x: number) {
 
 const upperCover = (layers: CloudLayers) => 1 - (1 - layers.mid) * (1 - layers.high);
 
+/** Low cloud over and just around the observer, which hides the sky from below. */
+export function localLowCover(section: CloudLayers[]) {
+  return weighted(section, VIEW_WEIGHTS, layers => layers.low);
+}
+
 export function scoreGlow(input: GlowInput): GlowResult {
   if (input.section.length !== PATH_DISTANCES_KM.length || input.aod.length !== PATH_DISTANCES_KM.length) {
     throw new Error("Glow input must cover every sampled path distance");
@@ -80,8 +85,7 @@ export function scoreGlow(input: GlowInput): GlowResult {
   const midBlock = weighted(input.section, MID_PATH_WEIGHTS, layers => layers.mid);
   const transmission = (1 - lowBlock) ** 1.5 * (1 - midBlock) ** 1.2;
 
-  const localLow = weighted(input.section, VIEW_WEIGHTS, layers => layers.low);
-  const view = 1 - 0.95 * localLow ** 1.3;
+  const view = 1 - 0.95 * localLowCover(input.section) ** 1.3;
 
   const aods = AOD_DISTANCES.map(distance => input.aod[indexOfDistance(distance)]).filter(value => value !== null);
   const aod = aods.length > 0 ? aods.reduce((sum, value) => sum + value, 0) / aods.length : null;
@@ -115,9 +119,6 @@ export function glowLevel(score: number): GlowLevel {
   }
   return level;
 }
-
-/** Score spread between the cloud models from which they count as disagreeing, about one glow level apart. */
-export const MODEL_DISAGREEMENT = 0.15;
 
 export const AEROSOL_LEVELS = [
   { level: "pristine", max: 0.1 },

@@ -17,16 +17,6 @@ export function formatClock(time: number, timeZone: string) {
   return formatter(timeZone, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(time);
 }
 
-/** "18时" */
-export function formatHour(time: number, timeZone: string) {
-  return formatter(timeZone, { hour: "numeric", hourCycle: "h23" }).format(time);
-}
-
-/** "10月26日" */
-export function formatMonthDay(time: number, timeZone: string) {
-  return formatter(timeZone, { month: "long", day: "numeric" }).format(time);
-}
-
 /** "周一" */
 export function formatWeekday(time: number, timeZone: string) {
   return formatter(timeZone, { weekday: "short" }).format(time);
@@ -40,12 +30,6 @@ export function formatRunTime(time: number, timeZone: string) {
 export function splitDuration(ms: number) {
   const total = Math.max(0, Math.round(ms / MINUTE_MS));
   return { hours: Math.floor(total / 60), minutes: total % 60 };
-}
-
-/** Wall-clock minutes after midnight as "07:09". */
-export function formatMinutesOfDay(minutes: number) {
-  const total = Math.round(minutes);
-  return `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 
 export function formatPercent(fraction: number) {

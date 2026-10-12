@@ -98,7 +98,7 @@ export function removePlace(key: string) {
   placesStore.write(placesStore.read().filter(place => placeKey(place) !== key));
 }
 
-export function placeHref(place: SavedPlace, options: { current?: boolean; preview?: boolean } = {}) {
+export function placeHref(place: SavedPlace, options: { current?: boolean } = {}) {
   const params = new URLSearchParams({
     lat: place.lat.toFixed(4),
     lon: place.lon.toFixed(4),
@@ -109,9 +109,6 @@ export function placeHref(place: SavedPlace, options: { current?: boolean; previ
   }
   if (options.current) {
     params.set("current", "1");
-  }
-  if (options.preview) {
-    params.set("preview", "1");
   }
   return `/place?${params}`;
 }

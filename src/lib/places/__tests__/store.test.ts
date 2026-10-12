@@ -11,16 +11,18 @@ describe("place helpers", () => {
   });
 
   it("encodes a place and its page flags into the link", () => {
-    const url = new URL(placeHref(guangzhou, { preview: true }), "https://example.com");
+    const url = new URL(placeHref(guangzhou, { current: true }), "https://example.com");
     expect(url.pathname).toBe("/place");
     expect(Object.fromEntries(url.searchParams)).toEqual({
       lat: "23.1167",
       lon: "113.2500",
       name: "广州",
       detail: "广东 广州市",
-      preview: "1",
+      current: "1",
     });
-    expect(new URL(placeHref({ ...beijing, detail: "" }, { current: true }), "https://example.com").searchParams.has("detail")).toBe(false);
+    const plain = new URL(placeHref({ ...beijing, detail: "" }), "https://example.com").searchParams;
+    expect(plain.has("detail")).toBe(false);
+    expect(plain.has("current")).toBe(false);
   });
 
   it("pages through my location first, then the saved places", () => {

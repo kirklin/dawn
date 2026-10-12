@@ -14,8 +14,6 @@ const summarySchema = z.object({
   timezone: z.string(),
   sunAltitude: z.number().nullable(),
   cloud: z.number().nullable(),
-  sunrise: z.number().nullable(),
-  sunset: z.number().nullable(),
   nextEvent: z.object({
     kind: z.enum(["sunrise", "sunset"]),
     date: z.string(),

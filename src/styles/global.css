@@ -15,11 +15,22 @@
     "Microsoft YaHei", sans-serif;
 }
 
-/* Frosted card over the sky; `--sky-card` holds the RGB channels of the sky tint behind it. */
-@utility sky-card {
-  border-radius: 16px;
-  background-color: rgb(var(--sky-card) / 0.42);
-  backdrop-filter: blur(24px) saturate(1.4);
+/*
+ * One material for everything laid over the sky, as iOS Weather does it: the sky shows through,
+ * blurred enough that the horizon becomes a soft wash, slightly dimmed and tinted so white text
+ * stays legible, with a hairline edge to lift it off the sky.
+ */
+@utility sky-material {
+  background-color: rgb(0 0 0 / 0.16);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(40px) saturate(1.8) brightness(0.8);
+}
+
+/* Text set straight on the sky. */
+@utility text-on-sky {
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 0.3),
+    0 2px 18px rgb(0 0 0 / 0.35);
 }
 
 @utility no-scrollbar {
@@ -105,7 +116,6 @@
 }
 
 :root {
-  --sky-card: 28 28 30;
   --sidebar: hsl(0 0% 98%);
   --sidebar-foreground: hsl(240 5.3% 26.1%);
   --sidebar-primary: hsl(240 5.9% 10%);

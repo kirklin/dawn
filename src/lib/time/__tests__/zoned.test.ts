@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, daysBetween, minutesOfDay, zonedDateKey, zonedMidnight } from "../zoned";
+import { addDays, daysBetween, zonedDateKey, zonedMidnight } from "../zoned";
 
 describe("zoned time", () => {
   it("finds local midnight in a fixed-offset zone", () => {
@@ -15,7 +15,6 @@ describe("zoned time", () => {
     const instant = Date.UTC(2026, 9, 11, 16, 30);
     expect(zonedDateKey(instant, "Asia/Shanghai")).toBe("2026-10-12");
     expect(zonedDateKey(instant, "Europe/London")).toBe("2026-10-11");
-    expect(minutesOfDay(instant, "Asia/Shanghai")).toBe(30);
   });
 
   it("steps and counts calendar days across months and years", () => {

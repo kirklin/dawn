@@ -31,11 +31,15 @@ export function useLabels(timeZone: string, now: number) {
       }
       return formatWeekday(time, timeZone);
     },
+    /** 6小时39分钟 / 6小时 / 39分钟 */
     duration(ms: number) {
       const { hours, minutes } = splitDuration(ms);
-      return hours > 0 ? common("duration", { hours, minutes }) : common("durationMinutes", { minutes });
+      if (hours === 0) {
+        return common("durationMinutes", { minutes });
+      }
+      return minutes === 0 ? common("durationHours", { hours }) : common("duration", { hours, minutes });
     },
-    /** 西偏南 8° */
+    /** 西偏南8° */
     azimuth(degrees: number) {
       const normalized = ((degrees % 360) + 360) % 360;
       const nearest = CARDINALS.reduce((best, entry) =>

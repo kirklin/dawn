@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { DAY_MS } from "~/lib/time/zoned";
 import { FORECAST_DAYS, MODEL_IDS, PATH_DISTANCES_KM } from "../models";
-import { getPlaceForecast, placeSunYear } from "../place-forecast";
+import { getPlaceForecast } from "../place-forecast";
 
 // Calls the live Open-Meteo APIs.
 describe("getPlaceForecast", () => {
-  it("assembles glow events, hours and astronomy for Guangzhou", async () => {
+  it("assembles glow events, hours and sun days for Guangzhou", async () => {
     const now = Date.now();
     const forecast = await getPlaceForecast({ lat: 23.1405, lon: 113.3275 }, now);
 
@@ -27,12 +28,28 @@ describe("getPlaceForecast", () => {
     const sunsets = forecast.events.filter(event => event.kind === "sunset");
     expect(sunsets.every(event => event.azimuth > 240 && event.azimuth < 270)).toBe(true);
 
+    // The sky can be shown at any moment of the four days, through the hour that ends them.
+    for (const track of [forecast.tracks.sunrise, forecast.tracks.sunset]) {
+      expect(track).toBeDefined();
+      expect(track!.hours[0].time).toBe(forecast.days[0].start);
+      expect(track!.hours.at(-1)!.time).toBe(forecast.days.at(-1)!.end);
+      for (const hour of track!.hours) {
+        expect(hour.cover).toHaveLength(PATH_DISTANCES_KM.length);
+        expect(hour.transmission).toBeGreaterThanOrEqual(0);
+        expect(hour.transmission).toBeLessThanOrEqual(1);
+      }
+    }
+
     for (const run of Object.values(forecast.runs)) {
       expect(now - run).toBeLessThan(2 * 24 * 3600_000);
     }
-    const year = placeSunYear(forecast, now);
-    expect(year.months).toHaveLength(12);
-    expect(year.months.every(month => month.sunrise !== null && month.sunset !== null)).toBe(true);
-    expect(year.longestDay?.date.slice(5, 7)).toBe("06");
+  }, 60_000);
+
+  it("covers all four days with a response that starts the day before, as a cached one does after midnight", async () => {
+    // Open-Meteo answers from its own today, so asking as if it were tomorrow gets a response a day old.
+    const forecast = await getPlaceForecast({ lat: 23.1405, lon: 113.3275 }, Date.now() + DAY_MS);
+    expect(forecast.events).toHaveLength(FORECAST_DAYS * 2);
+    expect(forecast.hours).toHaveLength(FORECAST_DAYS * 24);
+    expect(forecast.hours[0].time).toBe(forecast.days[0].start);
   }, 60_000);
 });

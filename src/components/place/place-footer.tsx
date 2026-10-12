@@ -13,8 +13,9 @@ export function PlaceFooter({ runs, timeZone }: PlaceFooterProps) {
   const t = useTranslations("Place.footer");
 
   return (
-    <footer className="mx-auto max-w-xl space-y-1 px-6 pt-6 pb-4 text-center text-[13px] leading-snug text-white/60">
-      <p>{t("data")}</p>
+    <footer className="mx-auto max-w-xl px-8 pt-5 text-[13px] leading-[18px] text-white/55">
+      <p>{t("weather")}</p>
+      <p>{t("map")}</p>
       <p className="tabular-nums">
         {t("runs", {
           ecmwf: formatRunTime(runs.ecmwf, timeZone),
@@ -22,8 +23,6 @@ export function PlaceFooter({ runs, timeZone }: PlaceFooterProps) {
           cams: formatRunTime(runs.cams, timeZone),
         })}
       </p>
-      <p>{t("places")}</p>
-      <p>{t("disclaimer")}</p>
     </footer>
   );
 }

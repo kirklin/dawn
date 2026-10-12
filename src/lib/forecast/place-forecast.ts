@@ -1,16 +1,14 @@
 import type { CloudLayers } from "./glow";
 import type { ModelId } from "./models";
 import type { CloudForecast, Wind, WindLayer } from "./open-meteo";
-import type { GlowEvent, GlowEventKind, GlowModelResult, ObserverHour, PlaceForecast } from "./types";
-import type { SunYear } from "~/lib/astro/sun";
+import type { GlowEvent, GlowEventKind, GlowModelResult, ObserverHour, PlaceForecast, SkyTrack } from "./types";
 import type { LatLon } from "~/lib/geo/coordinates";
 import { moonState, nextMoonEvent, upcomingQuarters } from "~/lib/astro/moon";
-import { createObserver, nextSunEvent, sunDay, sunYear } from "~/lib/astro/sun";
+import { createObserver, nextSunEvent, sunDay } from "~/lib/astro/sun";
 import { destinationPoint, roundCoordinate } from "~/lib/geo/coordinates";
 import { addDays, MINUTE_MS, zonedDateKey } from "~/lib/time/zoned";
 import { glowLevel, scoreGlow } from "./glow";
 import { FORECAST_DAYS, MODEL_IDS, PATH_DISTANCES_KM } from "./models";
-import { nightOutlook } from "./night";
 import { fetchAerosolForecast, fetchCloudForecast, fetchModelRuns, fetchWindForecast, WIND_LEVELS } from "./open-meteo";
 import { requireValueAt, valueAt } from "./series";
 
@@ -103,8 +101,7 @@ export async function getPlaceForecast(location: LatLon, now = Date.now()): Prom
       return [model, result];
     })) as Record<ModelId, GlowModelResult>;
 
-    const scores = MODEL_IDS.map(model => models[model].score);
-    const score = mean(scores);
+    const score = mean(MODEL_IDS.map(model => models[model].score));
     return {
       kind,
       date,
@@ -113,7 +110,6 @@ export async function getPlaceForecast(location: LatLon, now = Date.now()): Prom
       azimuth,
       score,
       level: glowLevel(score),
-      spread: Math.max(...scores) - Math.min(...scores),
       aod: models[MODEL_IDS[0]].factors.aod,
       wind,
       models,
@@ -130,19 +126,52 @@ export async function getPlaceForecast(location: LatLon, now = Date.now()): Prom
     }
   }
 
-  const hours: ObserverHour[] = clouds.time.map((time, index) => {
-    const layer = (pick: (model: ModelId) => number) => mean(MODEL_IDS.map(pick));
-    const at = (model: ModelId) => clouds.points[0][model];
+  const firstHour = days[0].start;
+  const endHour = days[days.length - 1].end;
+  const hours: ObserverHour[] = clouds.time.flatMap((time, index) => time >= firstHour && time < endHour
+    ? [{ time, cloud: mean(MODEL_IDS.map(model => clouds.points[0][model].total[index])) }]
+    : []);
+
+  // The sky can be shown at any moment of the forecast days, so the track runs to the hour that ends them.
+  const trackHours = clouds.time.flatMap((time, index) => time >= firstHour && time <= endHour ? [index] : []);
+  const skyTrack = (kind: GlowEventKind, azimuth: number): SkyTrack => {
+    const indexes = PATH_DISTANCES_KM.map((_, distanceIndex) => pointIndex(kind, distanceIndex));
     return {
-      time,
-      cloud: layer(model => at(model).total[index]),
-      low: layer(model => at(model).low[index]),
-      mid: layer(model => at(model).mid[index]),
-      high: layer(model => at(model).high[index]),
-      precipitation: layer(model => at(model).precipitation[index]),
-      aod: valueAt(aerosols.time, aerosols.points[0], time),
+      azimuth,
+      hours: trackHours.map((hour) => {
+        const time = clouds.time[hour];
+        const aod = indexes.map(index => valueAt(aerosols.time, aerosols.points[index], time));
+        const results = MODEL_IDS.map((model) => {
+          const section = indexes.map(index => ({
+            low: clouds.points[index][model].low[hour],
+            mid: clouds.points[index][model].mid[hour],
+            high: clouds.points[index][model].high[hour],
+          }));
+          return { section, ...scoreGlow({ section, aod, precipitation: clouds.points[0][model].precipitation[hour] }) };
+        });
+        const layer = (distance: number, pick: (layers: CloudLayers) => number) => round(mean(results.map(result => pick(result.section[distance]))));
+        return {
+          time,
+          cover: PATH_DISTANCES_KM.map((_, distance) => [
+            layer(distance, layers => layers.low),
+            layer(distance, layers => layers.mid),
+            layer(distance, layers => layers.high),
+          ]),
+          transmission: round(mean(results.map(result => result.factors.transmission))),
+          aod: results[0].factors.aod,
+          wet: round(1 - mean(results.map(result => result.factors.rain))),
+          wind: Object.fromEntries(Object.keys(WIND_LEVELS).map(name => [name, windAt(name as WindLayer, time)])) as Record<WindLayer, Wind>,
+        };
+      }),
     };
-  });
+  };
+  const tracks: PlaceForecast["tracks"] = {};
+  for (const kind of ["sunrise", "sunset"] as const) {
+    const azimuth = azimuths[kind];
+    if (azimuth !== null) {
+      tracks[kind] = skyTrack(kind, Math.round(azimuth));
+    }
+  }
 
   return {
     lat: origin.lat,
@@ -154,27 +183,17 @@ export async function getPlaceForecast(location: LatLon, now = Date.now()): Prom
     days,
     hours,
     events,
+    tracks,
     moon: {
       state: moonState(now),
       quarters: upcomingQuarters(now, 4),
       nextRise: nextMoonEvent(observer, 1, now, 2),
       nextSet: nextMoonEvent(observer, -1, now, 2),
-      days: days.map(day => ({
-        date: day.date,
-        rise: insideDay(nextMoonEvent(observer, 1, day.start, 1), day.start, day.end),
-        set: insideDay(nextMoonEvent(observer, -1, day.start, 1), day.start, day.end),
-      })),
     },
-    night: nightOutlook(observer, hours, now),
   };
 }
 
-/** Monthly sunrise and sunset averages for the place's current year; a year of searches, so only the detail page asks for it. */
-export function placeSunYear(forecast: Pick<PlaceForecast, "lat" | "lon" | "elevation" | "timezone">, now: number): SunYear {
-  const observer = createObserver(forecast.lat, forecast.lon, forecast.elevation);
-  return sunYear(observer, Number(zonedDateKey(now, forecast.timezone).slice(0, 4)), forecast.timezone);
-}
-
-function insideDay(time: number | null, start: number, end: number) {
-  return time !== null && time >= start && time < end ? time : null;
+/** Three decimals are finer than any forecast and keep the page payload small. */
+function round(value: number) {
+  return Math.round(value * 1000) / 1000;
 }

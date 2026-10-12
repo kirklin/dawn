@@ -48,8 +48,6 @@ function clearSky(altitude: number) {
 export interface SkyColors {
   top: Rgb;
   bottom: Rgb;
-  /** Tint of the frosted cards laid over this sky. */
-  card: Rgb;
 }
 
 export function skyColors(altitude: number, cloud: number): SkyColors {
@@ -58,15 +56,9 @@ export function skyColors(altitude: number, cloud: number): SkyColors {
   const overcastTop = mix(OVERCAST_NIGHT.top, OVERCAST_DAY.top, daylight);
   const overcastBottom = mix(OVERCAST_NIGHT.bottom, OVERCAST_DAY.bottom, daylight);
   const veil = roundForMarkup(0.85 * clamp01(cloud) ** 1.3);
-  const top = mix(clear.top, overcastTop, veil);
-  const bottom = mix(clear.bottom, overcastBottom, veil);
-  return { top, bottom, card: mix(mix(top, bottom, 0.35), [0, 0, 0], 0.45) };
+  return { top: mix(clear.top, overcastTop, veil), bottom: mix(clear.bottom, overcastBottom, veil) };
 }
 
 export function rgb(color: Rgb) {
   return `rgb(${color[0]} ${color[1]} ${color[2]})`;
-}
-
-export function rgbChannels(color: Rgb) {
-  return `${color[0]} ${color[1]} ${color[2]}`;
 }

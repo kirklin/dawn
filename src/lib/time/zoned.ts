@@ -84,9 +84,3 @@ export function daysBetween(from: string, to: string) {
   };
   return Math.round((utc(to) - utc(from)) / DAY_MS);
 }
-
-/** Minutes after local midnight of an instant, used for clock-face comparisons across days. */
-export function minutesOfDay(epochMs: number, timeZone: string) {
-  const p = zonedParts(epochMs, timeZone);
-  return p.hour * 60 + p.minute + p.second / 60;
-}

@@ -1,59 +1,43 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import type { HeroContent } from "./place-title";
-import type { TimeRange } from "~/lib/astro/constants";
-import type { SunYear } from "~/lib/astro/sun";
-import type { GlowEvent, PlaceForecast } from "~/lib/forecast/types";
+import type { PlaceForecast } from "~/lib/forecast/types";
 import type { SavedPlace } from "~/lib/places/store";
 import { useTranslations } from "next-intl";
 import { useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useNow } from "~/components/ios/use-now";
 import { useScrollChrome } from "~/components/ios/use-scroll-chrome";
 import { useSwipePaging } from "~/components/ios/use-swipe-paging";
 import { ForecastSky } from "~/components/sky/forecast-sky";
-import { rgbChannels, skyColors } from "~/components/sky/palette";
-import { quietSkyParams, skyParams } from "~/components/sky/sky-params";
-import { dayAt, eventId, GLOW_LINGER_MS, nextGlowEvent, nextSunCrossing } from "~/lib/forecast/selectors";
-import { formatClock, formatScore } from "~/lib/format";
+import { skyColors } from "~/components/sky/palette";
+import { glowMoment, skyParamsAt } from "~/components/sky/sky-params";
+import { dayAt, eventId, GLOW_LINGER_MS, lightPhaseAt, nearestEvent, nextSunCrossing, sunAltitudeAt, sunPathRange } from "~/lib/forecast/selectors";
+import { formatClock } from "~/lib/format";
 import { useRouter } from "~/lib/i18n/navigation";
 import { addPlace, locationStore, placeHref, placeKey, placePages, placesStore, useHydrated, useStore } from "~/lib/places/store";
-import { DAY_MS } from "~/lib/time/zoned";
-import { cn } from "~/lib/utils";
-import { AerosolCard } from "./cards/aerosol-card";
-import { AnalysisCard } from "./cards/analysis-card";
-import { AzimuthCard } from "./cards/azimuth-card";
+import { zonedDateKey } from "~/lib/time/zoned";
+import { FactorCards } from "./cards/factor-cards";
 import { GlowForecastCard } from "./cards/glow-forecast-card";
-import { GoldenHourCard } from "./cards/golden-hour-card";
-import { HourlyCard } from "./cards/hourly-card";
-import { LayersCard } from "./cards/layers-card";
+import { LightCard } from "./cards/light-card";
 import { MoonCard } from "./cards/moon-card";
-import { NightCard } from "./cards/night-card";
-import { SectionCard } from "./cards/section-card";
-import { SunCard } from "./cards/sun-card";
 import { PlaceFooter } from "./place-footer";
 import { PlaceHero, PlaceTitleBar } from "./place-title";
 import { PlaceToolbar } from "./place-toolbar";
-import { MoonSheet } from "./sheets/moon-sheet";
-import { SunSheet } from "./sheets/sun-sheet";
+import { SunPath } from "./sun-path";
 import { useLabels } from "./use-labels";
-import { useSummary } from "./use-summary";
 
 interface PlaceScreenProps {
   place: SavedPlace;
   /** The page of the device's own location. */
   current: boolean;
-  /** Opened from search: offers Cancel and Add instead of the toolbar. */
-  preview: boolean;
   forecast: PlaceForecast;
-  year: SunYear;
   /** Server time of the render, so the first client render matches it. */
   renderedAt: number;
 }
 
-export function PlaceScreen({ place, current, preview, forecast, year, renderedAt }: PlaceScreenProps) {
+export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScreenProps) {
   const t = useTranslations("Place");
-  const glow = useTranslations("Glow");
   const router = useRouter();
   const now = useNow(renderedAt);
   const { timezone } = forecast;
@@ -68,11 +52,13 @@ export function PlaceScreen({ place, current, preview, forecast, year, renderedA
   const places = useStore(placesStore);
   const location = useStore(locationStore);
   const pages = placePages(places, location);
-  const pageIndex = preview
-    ? -1
-    : pages.findIndex(page => page.current === current && (current || placeKey(page.place) === placeKey(place)));
-  /** Opened from search, or from a link to a place the list does not hold: offer to add it. */
-  const adding = preview || (hydrated && pageIndex === -1);
+  const pageIndex = pages.findIndex(page => page.current === current && (current || placeKey(page.place) === placeKey(place)));
+  /** Opened from search, or from a link to a place the list does not hold. */
+  const unsaved = hydrated && pageIndex === -1;
+  const add = () => {
+    addPlace(place);
+    toast(t("toolbar.added", { name: place.name }));
+  };
   const showPage = (index: number) => {
     const page = pages[index];
     if (page && index !== pageIndex) {
@@ -85,130 +71,81 @@ export function PlaceScreen({ place, current, preview, forecast, year, renderedA
     }
   });
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [sheet, setSheet] = useState<"sun" | "moon" | null>(null);
-
-  const nextEvent = nextGlowEvent(forecast.events, now);
-  const dayOf = (event: GlowEvent) => labels.day(event.date, event.time);
-  const summary = useSummary(nextEvent, nextEvent ? dayOf(nextEvent) : "");
-  const selected = forecast.events.find(event => eventId(event) === selectedId) ?? nextEvent;
-
-  const today = dayAt(forecast.days, now);
-  if (!today) {
-    throw new Error(`The forecast made at ${new Date(forecast.generatedAt).toISOString()} no longer covers the current time`);
+  /** The moment the sky shows; null follows the clock. */
+  const [chosen, setChosen] = useState<number | null>(null);
+  const [scrubbing, setScrubbing] = useState(false);
+  const time = chosen ?? now;
+  const day = dayAt(forecast.days, time);
+  if (!day) {
+    throw new Error(`The forecast made at ${new Date(forecast.generatedAt).toISOString()} does not cover ${new Date(time).toISOString()}`);
   }
-  const sunKind = nextSunCrossing(forecast.days, now)?.kind ?? "sunset";
 
-  const sky = useMemo(
-    () => (selected ? skyParams(selected, forecast) : quietSkyParams(forecast.lat, forecast.lon)),
-    [selected, forecast],
-  );
+  const sky = useMemo(() => skyParamsAt(forecast, time), [forecast, time]);
   const [low, mid, high] = sky.cover[0];
-  const tint = skyColors(sky.sun * (180 / Math.PI), 1 - (1 - low) * (1 - mid) * (1 - high));
+  const fallback = skyColors(sky.sun * (180 / Math.PI), 1 - (1 - low) * (1 - mid) * (1 - high));
 
-  let hero: HeroContent | null = null;
-  let compact: string | null = null;
-  if (selected) {
-    const level = glow(`level.${selected.level}`);
-    const event = glow(`event.${selected.kind}`);
-    const until = selected.time - now;
-    let heading = t("hero.heading", { day: dayOf(selected), event, time: formatClock(selected.time, timezone) });
-    if (until > 0 && until < DAY_MS) {
-      heading += ` · ${t("hero.countdown", { duration: labels.duration(until) })}`;
-    } else if (until <= 0 && until > -GLOW_LINGER_MS) {
-      heading += ` · ${t("hero.now")}`;
-    }
+  const altitude = sunAltitudeAt(forecast.days, time) ?? 0;
+  const phase = t(`hero.phase.${lightPhaseAt(altitude)}`);
+  const next = chosen === null ? nextSunCrossing(forecast.days, now) : null;
+  const context = next
+    ? t(next.kind === "sunrise" ? "hero.untilSunrise" : "hero.untilSunset", { duration: labels.duration(next.time - now) })
+    : t(zonedDateKey(time, timezone) === zonedDateKey(now, timezone) ? "hero.momentToday" : "hero.moment", {
+        day: labels.day(day.date, time),
+        phase,
+        altitude: Math.round(altitude),
+      });
+  const clock = formatClock(time, timezone);
 
-    const day = forecast.days.find(entry => entry.date === selected.date);
-    if (!day) {
-      throw new Error(`No sun day for the glow event on ${selected.date}`);
-    }
-    const range = (value: TimeRange | null) =>
-      value ? `${formatClock(value[0], timezone)}–${formatClock(value[1], timezone)}` : "--";
-    const golden = { label: t("golden.golden"), value: range(selected.kind === "sunset" ? day.goldenEvening : day.goldenMorning) };
-    const blue = { label: t("golden.blue"), value: range(selected.kind === "sunset" ? day.blueEvening : day.blueMorning) };
-
-    hero = {
-      heading,
-      level,
-      score: selected.score,
-      meter: t("hero.meter", { score: formatScore(selected.score) }),
-      models: t("analysis.models", { ecmwf: formatScore(selected.models.ecmwf.score), gfs: formatScore(selected.models.gfs.score) }),
-      facts: [
-        { label: t("hero.direction"), value: labels.azimuth(selected.azimuth) },
-        ...(selected.kind === "sunset" ? [golden, blue] : [blue, golden]),
-      ],
-    };
-    compact = t("compact", { level, day: dayOf(selected), event });
-  }
-
-  const addActions = adding
-    ? {
-        onCancel: () => router.replace("/"),
-        onAdd: () => {
-          addPlace(place);
-          router.replace("/");
-        },
-      }
-    : null;
+  const upcoming = forecast.events.filter(event => event.time + GLOW_LINGER_MS > now);
+  /** The details follow the next glow, or the one nearest a chosen moment. */
+  const selected = chosen === null ? upcoming[0] ?? null : nearestEvent(forecast.events, chosen);
 
   return (
     <div
       ref={rootRef}
-      className={cn("relative min-h-dvh", adding ? "pb-[calc(env(safe-area-inset-bottom)+16px)]" : "pb-[calc(env(safe-area-inset-bottom)+66px)]")}
-      style={{ "--scroll": 0, "--pin": "0px", "--sky-card": rgbChannels(tint.card) } as CSSProperties}
+      className="relative min-h-dvh pb-[calc(env(safe-area-inset-bottom)+72px)]"
+      style={{ "--scroll": 0, "--pin": "0px" } as CSSProperties}
     >
-      <ForecastSky params={sky} fallback={tint} horizonRef={cardsRef} />
-      <PlaceTitleBar ref={barRef} name={place.name} current={current} compact={compact} actions={addActions} />
-      <PlaceHero content={hero} />
+      <ForecastSky params={sky} instant={scrubbing} fallback={fallback} horizonRef={cardsRef} />
+      <PlaceTitleBar ref={barRef} name={place.name} current={current} compact={t("compact", { time: clock, phase })} />
+      <PlaceHero time={clock} context={context} onNow={chosen === null ? null : () => setChosen(null)}>
+        <SunPath
+          day={day}
+          range={sunPathRange(day, now)}
+          time={time}
+          timeZone={timezone}
+          onScrub={(moment) => {
+            setScrubbing(true);
+            setChosen(moment);
+          }}
+          onScrubEnd={() => setScrubbing(false)}
+        />
+      </PlaceHero>
 
       <main ref={cardsRef} className="mx-auto grid max-w-xl grid-cols-2 gap-3 px-4">
-        <HourlyCard forecast={forecast} now={now} summary={summary} />
-        {forecast.events.length > 0 && (
+        {upcoming.length > 0 && (
           <GlowForecastCard
-            events={forecast.events}
-            now={now}
+            events={upcoming}
             timeZone={timezone}
             labels={labels}
             selectedId={selected && eventId(selected)}
-            onSelect={setSelectedId}
+            onSelect={(event) => {
+              setScrubbing(false);
+              setChosen(glowMoment(event));
+            }}
           />
         )}
         {selected && (
           <>
-            <AnalysisCard event={selected} dayLabel={dayOf(selected)} />
-            <LayersCard event={selected} />
-            <AerosolCard aod={selected.aod} />
-            <SectionCard event={selected} labels={labels} />
+            <FactorCards event={selected} />
+            <LightCard event={selected} days={forecast.days} timeZone={timezone} labels={labels} />
           </>
         )}
-        <SunCard days={forecast.days} now={now} timeZone={timezone} onOpen={() => setSheet("sun")} />
-        <GoldenHourCard days={forecast.days} now={now} timeZone={timezone} />
-        <AzimuthCard day={today} labels={labels} />
-        <MoonCard moon={forecast.moon} now={now} timeZone={timezone} onOpen={() => setSheet("moon")} />
-        <NightCard night={forecast.night} timeZone={timezone} />
+        <MoonCard moon={forecast.moon} now={now} timeZone={timezone} />
       </main>
 
       <PlaceFooter runs={forecast.runs} timeZone={timezone} />
-      {!adding && <PlaceToolbar pages={pages} index={pageIndex} onSelect={showPage} />}
-
-      <SunSheet
-        open={sheet === "sun"}
-        onOpenChange={open => setSheet(open ? "sun" : null)}
-        kind={sunKind}
-        title={glow(`sun.${sunKind}`)}
-        forecast={forecast}
-        year={year}
-        now={now}
-        labels={labels}
-      />
-      <MoonSheet
-        open={sheet === "moon"}
-        onOpenChange={open => setSheet(open ? "moon" : null)}
-        moon={forecast.moon}
-        timeZone={timezone}
-        labels={labels}
-      />
+      <PlaceToolbar pages={pages} index={pageIndex} onSelect={showPage} onAdd={unsaved ? add : null} name={place.name} />
     </div>
   );
 }

@@ -2,19 +2,22 @@
 
 import type { Labels } from "../use-labels";
 import type { GlowEvent } from "~/lib/forecast/types";
-import { Flame } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { SkyCard } from "~/components/ios/sky-card";
-import { WeatherGlyph } from "~/components/sky/weather-glyph";
+import { SunGlyph } from "~/components/sky/sun-glyph";
 import { MODEL_IDS } from "~/lib/forecast/models";
-import { eventId, GLOW_LINGER_MS } from "~/lib/forecast/selectors";
+import { eventId } from "~/lib/forecast/selectors";
 import { formatClock } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { GLOW_GRADIENT } from "../glow-style";
 
 /** Narrowest visible bar segment, as a fraction of the 0–100% scale. */
 const MIN_SEGMENT = 0.04;
+/** Glows listed until the card is expanded. */
+const COLLAPSED_ROWS = 3;
 
+/** The bar spans the scores of the two cloud models, so its length shows how far they agree. */
 function segment(event: GlowEvent) {
   const scores = MODEL_IDS.map(model => event.models[model].score);
   let low = Math.min(...scores);
@@ -28,58 +31,59 @@ function segment(event: GlowEvent) {
 }
 
 interface GlowForecastCardProps {
+  /** The sunrises and sunsets still to come. */
   events: GlowEvent[];
-  now: number;
   timeZone: string;
   labels: Labels;
   selectedId: string | null;
-  onSelect: (id: string) => void;
+  onSelect: (event: GlowEvent) => void;
 }
 
-export function GlowForecastCard({ events, now, timeZone, labels, selectedId, onSelect }: GlowForecastCardProps) {
+export function GlowForecastCard({ events, timeZone, labels, selectedId, onSelect }: GlowForecastCardProps) {
   const t = useTranslations("Place.forecast");
   const glow = useTranslations("Glow");
+  const [expanded, setExpanded] = useState(false);
+  const shown = expanded ? events : events.slice(0, COLLAPSED_ROWS);
 
   return (
-    <SkyCard wide title={t("title")} icon={Flame} bodyClassName="px-2 pb-2">
-      <ul>
-        {events.map((event) => {
+    <SkyCard wide title={t("title")}>
+      <ul className="-mx-2 mt-1.5">
+        {shown.map((event) => {
           const id = eventId(event);
           const { low, high } = segment(event);
-          const past = event.time + GLOW_LINGER_MS < now;
           return (
-            <li key={id} className="border-t border-white/15 first:border-t-0">
+            <li
+              key={id}
+              className="relative before:absolute before:inset-x-2 before:top-0 before:h-px before:bg-white/15 first:before:hidden"
+            >
               <button
                 type="button"
-                onClick={() => onSelect(id)}
-                className={cn(
-                  "flex h-[52px] w-full items-center gap-2 rounded-lg px-2 text-left",
-                  id === selectedId && "bg-white/10",
-                  past && "opacity-45",
-                )}
+                onClick={() => onSelect(event)}
+                aria-pressed={id === selectedId}
+                className={cn("flex h-[52px] w-full items-center gap-2.5 rounded-xl px-2 text-left text-[17px]", id === selectedId && "bg-white/10")}
               >
-                <span className="w-11 shrink-0 text-[17px] font-medium">{labels.day(event.date, event.time)}</span>
-                <WeatherGlyph kind={event.kind} className="size-6 shrink-0" />
-                <span className="w-[68px] shrink-0 leading-tight">
-                  <span className="block text-[15px] font-medium">{glow(`event.${event.kind}`)}</span>
-                  <span className="block text-[13px] text-white/60 tabular-nums">{formatClock(event.time, timeZone)}</span>
+                <span className="w-9 shrink-0">{labels.day(event.date, event.time)}</span>
+                <SunGlyph kind={event.kind} className="size-6 shrink-0" />
+                <span className="w-[88px] shrink-0 tabular-nums">
+                  {t("event", { event: glow(`event.${event.kind}`), time: formatClock(event.time, timeZone) })}
                 </span>
-                <span className="relative h-[5px] flex-1 rounded-full bg-black/25">
+                <span className="relative h-1.5 flex-1 rounded-full bg-black/25">
                   <span
                     className="absolute inset-0 rounded-full"
-                    style={{
-                      background: GLOW_GRADIENT,
-                      clipPath: `inset(0 ${(1 - high) * 100}% 0 ${low * 100}% round 3px)`,
-                    }}
+                    style={{ background: GLOW_GRADIENT, clipPath: `inset(0 ${(1 - high) * 100}% 0 ${low * 100}% round 999px)` }}
                   />
                 </span>
-                <span className="w-[68px] shrink-0 text-right text-[17px] font-medium">{glow(`level.${event.level}`)}</span>
+                <span className="w-[70px] shrink-0 text-right">{glow(`level.${event.level}`)}</span>
               </button>
             </li>
           );
         })}
       </ul>
-      <p className="px-2 pt-1 text-[13px] text-white/50">{t("hint")}</p>
+      {events.length > COLLAPSED_ROWS && (
+        <button type="button" onClick={() => setExpanded(!expanded)} className="mt-2 h-11 w-full rounded-xl bg-white/12 text-[17px]">
+          {expanded ? t("collapse") : t("expand", { count: events.length })}
+        </button>
+      )}
     </SkyCard>
   );
 }

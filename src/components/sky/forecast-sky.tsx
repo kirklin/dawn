@@ -11,14 +11,16 @@ import { createSkyRenderer } from "./sky-renderer";
 
 interface ForecastSkyProps {
   params: SkyParams;
+  /** Follows `params` without easing, while the time is being dragged. */
+  instant: boolean;
   /** Gradient shown until the first frame is drawn. */
   fallback: SkyColors;
   /** The horizon lines up with this element's top edge as laid out before scrolling. */
   horizonRef: RefObject<HTMLElement | null>;
 }
 
-/** Fixed full-screen backdrop: the forecast sky of the selected glow event, rendered with WebGL. */
-export function ForecastSky({ params, fallback, horizonRef }: ForecastSkyProps) {
+/** Fixed full-screen backdrop: the forecast sky at one moment, rendered with WebGL. */
+export function ForecastSky({ params, instant, fallback, horizonRef }: ForecastSkyProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<SkyRenderer | null>(null);
   const [drawn, setDrawn] = useState(false);
@@ -51,8 +53,8 @@ export function ForecastSky({ params, fallback, horizonRef }: ForecastSkyProps) 
     if (!renderer) {
       throw new Error("The sky renderer is not running");
     }
-    renderer.setParams(params);
-  }, [params]);
+    renderer.setParams(params, instant);
+  }, [params, instant]);
 
   return (
     <div

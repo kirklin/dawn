@@ -4,9 +4,8 @@ import type { RefObject } from "react";
 import { useEffect } from "react";
 
 /**
- * Drives the iOS Weather scroll effect: exposes the scroll offset as `--scroll` and the title bar
- * height as `--pin` on `root`, and clips every card at the pinned title bar so it collapses under
- * its sticky header.
+ * Drives the scroll effect: exposes the scroll offset as `--scroll` and the title bar height as
+ * `--pin` on `root`, and clips every card at the pinned title bar so it slides under it.
  */
 export function useScrollChrome(root: RefObject<HTMLElement | null>, bar: RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -23,20 +22,10 @@ export function useScrollChrome(root: RefObject<HTMLElement | null>, bar: RefObj
       const pin = barElement.getBoundingClientRect().height;
       rootElement.style.setProperty("--pin", `${pin}px`);
 
-      const cards = Array.from(rootElement.querySelectorAll<HTMLElement>("[data-card]"), (card) => {
-        const header = card.querySelector<HTMLElement>("[data-card-header]");
-        const body = card.querySelector<HTMLElement>("[data-card-body]");
-        if (!header || !body) {
-          throw new Error("A card is missing its header or body");
-        }
-        return { card, body, rect: card.getBoundingClientRect(), bodyRect: body.getBoundingClientRect(), headerHeight: header.offsetHeight };
-      });
-
-      for (const { card, body, rect, bodyRect, headerHeight } of cards) {
+      const cards = Array.from(rootElement.querySelectorAll<HTMLElement>("[data-card]"), card => ({ card, rect: card.getBoundingClientRect() }));
+      for (const { card, rect } of cards) {
         const cut = Math.max(0, Math.min(rect.height, pin - rect.top));
-        card.style.clipPath = cut > 0 ? `inset(${cut}px 0 0 0 round 16px)` : "";
-        const bodyCut = Math.max(0, Math.min(bodyRect.height, pin + headerHeight - bodyRect.top));
-        body.style.clipPath = bodyCut > 0 ? `inset(${bodyCut}px 0 0 0)` : "";
+        card.style.clipPath = cut > 0 ? `inset(${cut}px 0 0 0 round 22px)` : "";
       }
     };
     const schedule = () => {
