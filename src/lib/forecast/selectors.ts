@@ -56,25 +56,20 @@ export function hourAt(hours: ObserverHour[], time: number) {
 
 /** How much of the night the sun path shows on each side of the daylight. */
 const SUN_PATH_MARGIN_MS = 2 * HOUR_MS;
-/** How far the sun path reaches past the present when the present falls outside its usual range. */
-const SUN_PATH_NOW_MARGIN_MS = 30 * MINUTE_MS;
 
 /**
- * The part of `day` the sun path shows: from two hours before sunrise to two hours after sunset, widened to
- * keep `now` in view, within the day. A day whose sun does not rise and set once, in that order, is shown whole.
+ * The part of `day` the sun path shows: from two hours before sunrise to two hours after sunset, within the
+ * day, so the curve stands even about noon. A day whose sun does not rise and set once, in that order, is shown whole.
  */
-export function sunPathRange(day: SunDay, now: number): TimeRange {
+export function sunPathRange(day: SunDay): TimeRange {
   const { sunrise, sunset } = day;
   if ((sunrise === null && sunset === null) || (sunrise !== null && sunset !== null && sunset < sunrise)) {
     return [day.start, day.end];
   }
-  let start = sunrise === null ? day.start : sunrise - SUN_PATH_MARGIN_MS;
-  let end = sunset === null ? day.end : sunset + SUN_PATH_MARGIN_MS;
-  if (now >= day.start && now < day.end) {
-    start = Math.min(start, now - SUN_PATH_NOW_MARGIN_MS);
-    end = Math.max(end, now + SUN_PATH_NOW_MARGIN_MS);
-  }
-  return [Math.max(day.start, start), Math.min(day.end, end)];
+  return [
+    sunrise === null ? day.start : Math.max(day.start, sunrise - SUN_PATH_MARGIN_MS),
+    sunset === null ? day.end : Math.min(day.end, sunset + SUN_PATH_MARGIN_MS),
+  ];
 }
 
 /** The first sunrise or sunset after `time`. */

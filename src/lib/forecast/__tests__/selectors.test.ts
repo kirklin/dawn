@@ -40,21 +40,18 @@ describe("sun selectors", () => {
     expect(lightPhases({ kind: "sunset", date: "2026-12-20" }, polar).every(phase => phase.kind === "blue")).toBe(true);
   });
 
-  it("shows the sun path from two hours before sunrise to two hours after sunset, and keeps the present in it", () => {
-    const [today, tomorrow] = days;
-    expect(sunPathRange(today, noon)).toEqual([today.sunrise! - 2 * HOUR_MS, today.sunset! + 2 * HOUR_MS]);
-    expect(sunPathRange(tomorrow, noon)).toEqual([tomorrow.sunrise! - 2 * HOUR_MS, tomorrow.sunset! + 2 * HOUR_MS]);
-
-    const lateEvening = today.end - HOUR_MS;
-    expect(sunPathRange(today, lateEvening)).toEqual([today.sunrise! - 2 * HOUR_MS, lateEvening + 30 * MINUTE_MS]);
-    expect(sunPathRange(today, today.end - 10 * MINUTE_MS)[1]).toBe(today.end);
-    expect(sunPathRange(today, today.start + HOUR_MS)[0]).toBe(today.start + 30 * MINUTE_MS);
+  it("shows the sun path from two hours before sunrise to two hours after sunset, even about noon", () => {
+    for (const day of days) {
+      const [start, end] = sunPathRange(day);
+      expect([start, end]).toEqual([day.sunrise! - 2 * HOUR_MS, day.sunset! + 2 * HOUR_MS]);
+      expect(Math.abs((start + end) / 2 - solarNoon(day))).toBeLessThan(10 * MINUTE_MS);
+    }
   });
 
   it("shows the whole day where the sun does not rise and set", () => {
     const polarNight = sunDay(createObserver(78.22, 15.65, 0), "2026-12-20", "Arctic/Longyearbyen");
     expect(polarNight.sunrise).toBeNull();
-    expect(sunPathRange(polarNight, noon)).toEqual([polarNight.start, polarNight.end]);
+    expect(sunPathRange(polarNight)).toEqual([polarNight.start, polarNight.end]);
   });
 
   it("finds the coming sunset at noon and the next sunrise after dark", () => {

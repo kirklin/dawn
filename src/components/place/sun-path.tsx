@@ -199,6 +199,8 @@ export function SunPath({ day, range, time, timeZone, onScrub, onScrubEnd }: Sun
   const horizon = y(0);
   const sunAltitude = altitudeAt(day, time);
   const sun = { left: fraction(time), top: y(sunAltitude) };
+  /** Deep in the night the moment falls outside the range: the ticks are all dark or all lit and the sun is not drawn. */
+  const inRange = time >= start && time < end;
 
   const crossings = (["sunrise", "sunset"] as const).flatMap(kind => day[kind] === null ? [] : [{ kind, time: day[kind] }]);
   const labels = labelStyles(crossings, fraction, horizon, widths);
@@ -267,7 +269,7 @@ export function SunPath({ day, range, time, timeZone, onScrub, onScrubEnd }: Sun
       aria-label={t("scrub")}
       aria-valuemin={start}
       aria-valuemax={end - 1}
-      aria-valuenow={time}
+      aria-valuenow={Math.min(end - 1, Math.max(start, time))}
       aria-valuetext={formatClock(time, timeZone)}
       data-swipe-ignore
       className="relative cursor-grab touch-pan-y overflow-x-clip outline-none select-none active:cursor-grabbing"
@@ -312,10 +314,12 @@ export function SunPath({ day, range, time, timeZone, onScrub, onScrubEnd }: Sun
           </span>
         ))}
         {dragging && <span className="absolute inset-y-0 w-px -translate-x-1/2 bg-white/50" style={{ left: percent(sun.left) }} />}
-        <span
-          className="absolute size-3 -translate-1/2 rounded-full bg-white shadow-[0_0_12px_3px_rgb(255_255_255/0.5)]"
-          style={{ left: percent(sun.left), top: sun.top, opacity: sunAltitude > 0 ? 1 : 0.6 }}
-        />
+        {inRange && (
+          <span
+            className="absolute size-3 -translate-1/2 rounded-full bg-white shadow-[0_0_12px_3px_rgb(255_255_255/0.5)]"
+            style={{ left: percent(sun.left), top: sun.top, opacity: sunAltitude > 0 ? 1 : 0.6 }}
+          />
+        )}
       </div>
 
       <div className="relative mt-3 h-2.5 overflow-hidden drop-shadow-[0_1px_2px_rgb(0_0_0/0.3)]" style={{ marginInline: SCALE_INSET }}>

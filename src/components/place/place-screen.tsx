@@ -111,7 +111,7 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
       <PlaceHero time={clock} context={context} onNow={chosen === null ? null : () => setChosen(null)}>
         <SunPath
           day={day}
-          range={sunPathRange(day, now)}
+          range={sunPathRange(day)}
           time={time}
           timeZone={timezone}
           onScrub={(moment) => {
