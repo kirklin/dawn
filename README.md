@@ -8,9 +8,15 @@
 
 twilit.cc is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
 
-## 灵感来源
+## 产品灵感
 
-灵感来源于 [sunsetbot.top](https://sunsetbot.top)，其实之前就留意到它已经停服了。后来在 Ruby 的日出日落晚霞投稿群里，马老师问：「sunsetbot」小程序没用了吗？于是 Ruby 决定和好朋友 Kirk 一起“复活”一下这个产品，主要代码贡献是 Kirk。
+几年前的一个傍晚，Ruby 抬头时才发现，自己又一次错过了那场难得的晚霞。后来，她在小红书上偶然搜到了 [sunsetbot.top](https://sunsetbot.top/) 这个小程序。
+
+那时她才意识到，原来真的有人在认真地为日出、日落与晚霞做一件专门的事：把稍纵即逝的天空记录下来，也把观看天空变成一种可以被期待的体验。
+
+后来，sunsetbot 停服了。在 Ruby 的日出日落晚霞投稿群里，马老师问：“sunsetbot 小程序没用了吗？”这句话让 Ruby 再次想起了它，也让一个念头逐渐清晰起来——或许可以和好朋友 Kirk 一起，让这件事重新开始。
+
+于是，twilit.cc 诞生了。Kirk 负责主要代码与界面设计，Ruby 负责产品想法以及社群用户反馈的收集。它不只是对一个旧产品的延续，也是两个人对日出、日落与晚霞这件小事的重新回答。
 
 ![sunsetbot.top 截图](.github/assets/sunsetbot-origin.png)
 
