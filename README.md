@@ -42,4 +42,4 @@ pnpm typecheck && pnpm lint && pnpm test --run && pnpm build
 
 ## Data
 
-Weather data by [Open-Meteo](https://open-meteo.com) (ECMWF IFS, NCEP GFS and CAMS), licensed under CC BY 4.0. Place search by [Photon](https://photon.komoot.io) and Open-Meteo geocoding, map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
+Weather data by [Open-Meteo](https://open-meteo.com) (ECMWF IFS, NCEP GFS and CAMS), licensed under CC BY 4.0. Place search by [Photon](https://photon.komoot.io) and Open-Meteo geocoding, and the name of your location by [Nominatim](https://nominatim.org) under the [OSMF usage policy](https://operations.osmfoundation.org/policies/nominatim/); map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.

@@ -3,8 +3,10 @@ import { z } from "zod";
 import { distanceKm } from "~/lib/geo/coordinates";
 
 const PHOTON_SEARCH = "https://photon.komoot.io/api/";
-const PHOTON_REVERSE = "https://photon.komoot.io/reverse";
 const OPEN_METEO_GEOCODING = "https://geocoding-api.open-meteo.com/v1/search";
+const NOMINATIM_REVERSE = "https://nominatim.openstreetmap.org/reverse";
+/** Nominatim's usage policy asks every application to identify itself; stock library user agents are blocked. */
+const NOMINATIM_HEADERS = { "User-Agent": "Twilit/0.1 (+https://github.com/kirklin/twilit)" };
 const REVALIDATE_SECONDS = 24 * 3600;
 
 /** Settlements, administrative areas and scenic features. */
@@ -29,8 +31,6 @@ const SEARCH_TAGS = [
   "boundary:protected_area",
   "boundary:national_park",
 ];
-const REVERSE_TAGS = ["place:city", "place:county", "place:town"];
-
 /** GeoNames feature codes of capitals and administrative seats. */
 const MAJOR_CITY_CODES = new Set(["PPLC", "PPLA", "PPLA2", "PPLA3"]);
 const DUPLICATE_DISTANCE_KM = 15;
@@ -69,8 +69,28 @@ const openMeteoSchema = z.object({
   })).optional(),
 });
 
-async function getJson(url: URL): Promise<unknown> {
-  const response = await fetch(url, { next: { revalidate: REVALIDATE_SECONDS } });
+const geocodingSchema = z.object({
+  name: z.string().optional(),
+  city: z.string().optional(),
+  county: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
+  country_code: z.string().optional(),
+});
+
+/** Nominatim's geocodejson: one feature, or an error where there is nothing to name, as out at sea. */
+const nominatimSchema = z.union([
+  z.object({ error: z.string() }),
+  z.object({
+    features: z.tuple([z.object({
+      properties: z.object({ geocoding: geocodingSchema }),
+      geometry: z.object({ coordinates: z.tuple([z.number(), z.number()]) }),
+    })]),
+  }),
+]);
+
+async function getJson(url: URL, headers?: Record<string, string>): Promise<unknown> {
+  const response = await fetch(url, { headers, next: { revalidate: REVALIDATE_SECONDS } });
   if (!response.ok) {
     throw new Error(`${url.origin}${url.pathname} responded ${response.status}: ${await response.text()}`);
   }
@@ -145,14 +165,42 @@ export async function searchPlaces(query: string): Promise<PlaceCandidate[]> {
   return merged;
 }
 
-export async function reversePlace(point: LatLon): Promise<PlaceCandidate | null> {
-  const url = new URL(PHOTON_REVERSE);
-  url.searchParams.set("lat", point.lat.toFixed(4));
-  url.searchParams.set("lon", point.lon.toFixed(4));
-  url.searchParams.set("radius", "20");
-  url.searchParams.set("limit", "1");
-  for (const tag of REVERSE_TAGS) {
-    url.searchParams.append("osm_tag", tag);
+/** OSM keeps several variants of a name in one tag, separated by semicolons; the first is the main one. */
+function firstVariant(value: string) {
+  return value.split(";")[0].trim();
+}
+
+/**
+ * The city a reverse geocoding falls in, or its county outside cities, e.g. "广州市" in "广东省", or "纽约" in
+ * "美国 纽约州"; the name of the matched object itself when it has neither.
+ */
+export function placeFromGeocoding(geocoding: z.infer<typeof geocodingSchema>) {
+  const { city, county, state, country, country_code: countryCode } = geocoding;
+  const found = city ?? county ?? geocoding.name;
+  if (!found) {
+    return null;
   }
-  return photonPlaces(photonSchema.parse(await getJson(url)))[0] ?? null;
+  const name = firstVariant(found);
+  const divisions = [state, city ? county : undefined].map(division => division && firstVariant(division));
+  return { name, detail: detailOf(name, divisions, countryCode, country && firstVariant(country)) };
+}
+
+/**
+ * Names the place at `point` with OpenStreetMap's Nominatim, at city level, in Simplified Chinese where OSM has it.
+ * The point is rounded to about a kilometre: enough for a city's name, and nearby lookups share the cache.
+ */
+export async function reversePlace(point: LatLon): Promise<PlaceCandidate | null> {
+  const url = new URL(NOMINATIM_REVERSE);
+  url.searchParams.set("format", "geocodejson");
+  url.searchParams.set("lat", point.lat.toFixed(2));
+  url.searchParams.set("lon", point.lon.toFixed(2));
+  url.searchParams.set("zoom", "10");
+  url.searchParams.set("accept-language", "zh-Hans,zh-CN,zh");
+  const body = nominatimSchema.parse(await getJson(url, NOMINATIM_HEADERS));
+  if ("error" in body) {
+    return null;
+  }
+  const [feature] = body.features;
+  const place = placeFromGeocoding(feature.properties.geocoding);
+  return place && { ...place, lat: feature.geometry.coordinates[1], lon: feature.geometry.coordinates[0] };
 }
