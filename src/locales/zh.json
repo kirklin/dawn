@@ -2,7 +2,7 @@
   "App": {
     "name": "twilit.cc",
     "brand": "twilit.cc",
-    "description": "未来四天的朝霞与晚霞预报"
+    "description": "未来十五天的朝霞与晚霞预报"
   },
   "Common": {
     "today": "今天",
@@ -61,8 +61,8 @@
     "forecast": {
       "title": "火烧云预报",
       "event": "{event} {time}",
-      "expand": "查看全部{count}场预报",
-      "collapse": "收起"
+      "more": "查看{days}天预报",
+      "sheet": "{days}天预报"
     },
     "factors": {
       "canvas": {

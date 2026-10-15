@@ -1,8 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { formatWeekday, splitDuration } from "~/lib/format";
-import { addDays, zonedDateKey } from "~/lib/time/zoned";
+import { formatMonthDay, formatWeekday, splitDuration } from "~/lib/format";
+import { addDays, daysBetween, zonedDateKey } from "~/lib/time/zoned";
+
+/** From this many days ahead a weekday could be this week's or next, so days go by their date. */
+const DATED_FROM_DAYS = 7;
 
 const CARDINALS = [
   { degrees: 0, base: "north", clockwise: "east", counter: "west" },
@@ -17,19 +20,28 @@ export function useLabels(timeZone: string, now: number) {
   const direction = useTranslations("Direction");
   const today = zonedDateKey(now, timeZone);
 
+  /** 今天 / 明天 / 后天 / 周四 */
+  const relativeDay = (dateKey: string, time: number) => {
+    if (dateKey === today) {
+      return common("today");
+    }
+    if (dateKey === addDays(today, 1)) {
+      return common("tomorrow");
+    }
+    if (dateKey === addDays(today, 2)) {
+      return common("dayAfterTomorrow");
+    }
+    return formatWeekday(time, timeZone);
+  };
+
   return {
-    /** 今天 / 明天 / 后天 / 周四 */
+    /** 今天 / 明天 / 后天 / 周四, and 10月23日 from a week ahead */
     day(dateKey: string, time: number) {
-      if (dateKey === today) {
-        return common("today");
-      }
-      if (dateKey === addDays(today, 1)) {
-        return common("tomorrow");
-      }
-      if (dateKey === addDays(today, 2)) {
-        return common("dayAfterTomorrow");
-      }
-      return formatWeekday(time, timeZone);
+      return daysBetween(today, dateKey) >= DATED_FROM_DAYS ? formatMonthDay(time, timeZone) : relativeDay(dateKey, time);
+    },
+    /** 今天 10月16日 / 周四 10月23日 */
+    heading(dateKey: string, time: number) {
+      return `${relativeDay(dateKey, time)} ${formatMonthDay(time, timeZone)}`;
     },
     /** 6小时39分钟 / 6小时 / 39分钟 */
     duration(ms: number) {

@@ -12,9 +12,13 @@ const CLOUD_VARIABLES = ["cloud_cover", "cloud_cover_low", "cloud_cover_mid", "c
 
 /**
  * Open-Meteo starts its hours at local midnight of its own today, and a response cached before
- * midnight is still served once after it; one extra day keeps the last forecast day covered.
+ * midnight is still served once after it; one extra day, the most the API serves, keeps the last
+ * forecast day in the response.
  */
 const FETCH_DAYS = String(FORECAST_DAYS + 1);
+
+/** The air quality API serves at most seven days; the CAMS run itself reaches five. */
+const AIR_QUALITY_DAYS = "7";
 
 const hourlySchema = z.object({ time: z.array(z.number()) }).catchall(z.array(z.number().nullable()));
 
@@ -54,27 +58,34 @@ function coordinateParams(points: LatLon[]) {
   };
 }
 
-function requireSeries(hourly: z.infer<typeof hourlySchema>, key: string) {
+/**
+ * A model's hourly series. Open-Meteo fills the hours past the end of the model's run with null; a null
+ * before the last value is a broken response.
+ */
+export function modelSeries(hourly: z.infer<typeof hourlySchema>, key: string) {
   const series = hourly[key];
   if (!series) {
     throw new Error(`Open-Meteo response is missing ${key}`);
   }
-  return series.map((value, index) => {
-    if (value === null) {
-      throw new Error(`Open-Meteo returned no ${key} for hour ${index}`);
-    }
-    return value as number;
-  });
+  const end = series.findLastIndex(value => value !== null) + 1;
+  if (end === 0) {
+    throw new Error(`Open-Meteo returned no ${key}`);
+  }
+  const gap = series.indexOf(null);
+  if (gap !== -1 && gap < end) {
+    throw new Error(`Open-Meteo returned no ${key} for hour ${gap}`);
+  }
+  return series;
 }
 
 export interface ModelHours {
-  /** Cloud cover fractions, 0–1. */
-  total: number[];
-  low: number[];
-  mid: number[];
-  high: number[];
+  /** Cloud cover fractions, 0–1; null past the end of the model's run, as below. */
+  total: (number | null)[];
+  low: (number | null)[];
+  mid: (number | null)[];
+  high: (number | null)[];
   /** mm per hour. */
-  precipitation: number[];
+  precipitation: (number | null)[];
 }
 
 export interface CloudForecast {
@@ -101,17 +112,17 @@ export async function fetchCloudForecast(points: LatLon[]): Promise<CloudForecas
     throw new Error(`Open-Meteo returned ${body.length} forecasts for ${points.length} coordinates`);
   }
 
-  const percent = (values: number[]) => values.map(value => value / 100);
+  const percent = (values: (number | null)[]) => values.map(value => value === null ? null : value / 100);
   return {
     timezone: body[0].timezone,
     elevation: body[0].elevation,
     time: body[0].hourly.time.map(seconds => seconds * 1000),
     points: body.map(point => Object.fromEntries(CLOUD_MODELS.map(model => [model.id, {
-      total: percent(requireSeries(point.hourly, `cloud_cover_${model.openMeteo}`)),
-      low: percent(requireSeries(point.hourly, `cloud_cover_low_${model.openMeteo}`)),
-      mid: percent(requireSeries(point.hourly, `cloud_cover_mid_${model.openMeteo}`)),
-      high: percent(requireSeries(point.hourly, `cloud_cover_high_${model.openMeteo}`)),
-      precipitation: requireSeries(point.hourly, `precipitation_${model.openMeteo}`),
+      total: percent(modelSeries(point.hourly, `cloud_cover_${model.openMeteo}`)),
+      low: percent(modelSeries(point.hourly, `cloud_cover_low_${model.openMeteo}`)),
+      mid: percent(modelSeries(point.hourly, `cloud_cover_mid_${model.openMeteo}`)),
+      high: percent(modelSeries(point.hourly, `cloud_cover_high_${model.openMeteo}`)),
+      precipitation: modelSeries(point.hourly, `precipitation_${model.openMeteo}`),
     }])) as Record<ModelId, ModelHours>),
   };
 }
@@ -127,9 +138,15 @@ export interface Wind {
   north: number;
 }
 
+/** Hourly wind at one layer, m/s toward the east and toward the north; null past the end of the model's run. */
+export interface WindSeries {
+  east: (number | null)[];
+  north: (number | null)[];
+}
+
 export interface WindForecast {
   time: number[];
-  models: Record<ModelId, Record<WindLayer, Wind[]>>;
+  models: Record<ModelId, Record<WindLayer, WindSeries>>;
 }
 
 /** Hourly wind at the cloud layers over one point. */
@@ -147,14 +164,15 @@ export async function fetchWindForecast(point: LatLon): Promise<WindForecast> {
   }).toString();
 
   const [body] = pointsOf(pointSchema).parse(await getJson(url, FORECAST_REVALIDATE_SECONDS));
-  const winds = (model: string, level: number) => {
-    const speeds = requireSeries(body.hourly, `wind_speed_${level}hPa_${model}`);
-    const directions = requireSeries(body.hourly, `wind_direction_${level}hPa_${model}`);
+  const winds = (model: string, level: number): WindSeries => {
+    const speeds = modelSeries(body.hourly, `wind_speed_${level}hPa_${model}`);
+    const directions = modelSeries(body.hourly, `wind_direction_${level}hPa_${model}`);
     // Meteorological direction is where the wind blows from.
-    return speeds.map((speed, index) => {
-      const from = directions[index] * (Math.PI / 180);
-      return { east: -speed * Math.sin(from), north: -speed * Math.cos(from) };
+    const component = (along: (from: number) => number) => speeds.map((speed, index) => {
+      const direction = directions[index];
+      return speed === null || direction === null ? null : -speed * along(direction * (Math.PI / 180));
     });
+    return { east: component(Math.sin), north: component(Math.cos) };
   };
   return {
     time: body.hourly.time.map(seconds => seconds * 1000),
@@ -177,7 +195,7 @@ export async function fetchAerosolForecast(points: LatLon[]): Promise<AerosolFor
     ...coordinateParams(points),
     hourly: "aerosol_optical_depth",
     domains: "cams_global",
-    forecast_days: FETCH_DAYS,
+    forecast_days: AIR_QUALITY_DAYS,
     timezone: "auto",
     timeformat: "unixtime",
   }).toString();

@@ -4,7 +4,7 @@
 
 # twilit.cc
 
-**Sunrise and sunset glow forecast for the next four days.**
+**Sunrise and sunset glow forecast for the next 15 days.**
 
 twilit.cc is a mobile web app that tells you whether the next sunrise or sunset will light up the clouds. It reads the ECMWF and GFS cloud forecasts at eight points toward the sun, out to 400 km, adds the CAMS aerosol forecast, and rates each event from 不烧 (none) to 超级大烧 (epic). Behind every page is the sky it forecasts, rendered in WebGL from the same data, with the clouds drifting on the forecast winds. Drag the sun along its path and the sky follows it through the day. The interface is in Chinese. On an iPhone it runs full screen once added to the Home Screen.
 
@@ -47,7 +47,7 @@ Each place gets eight points along the azimuth of its sunrise and sunset, at 0, 
 - aerosol optical depth from CAMS
 - rain at the place
 
-The two scores are averaged, and the bar beside each event spans both, so its length shows how far the models agree. Sunrise and sunset, golden and blue hour, moonrise, moonset and the phase of the moon come from astronomy-engine.
+The two scores are averaged, and the bar beside each event spans both, so its length shows how far the models agree. An event is rated only where both models reach it, which ECMWF does for about 15 days; CAMS reaches five, and past it aerosol is left out of the score. Sunrise and sunset, golden and blue hour, moonrise, moonset and the phase of the moon come from astronomy-engine.
 
 ## The sky
 
@@ -56,7 +56,7 @@ The sky shows the present, or any moment from two hours before sunrise to two ho
 ## TODO
 
 - [ ] 新用户打开后先看到的是添加地点的页面，不知道该做什么；首屏改为展示一个大烧的广州示例地点，没有定位时提示用户开启定位，并申请定位权限。
-- [ ] 预报天数太短，用户没法提前安排；预报延长到 15 天，点击后用弹窗展示未来 15 天的预报。
+- [x] 预报天数太短，用户没法提前安排；预报延长到 15 天，点击后用弹窗展示未来 15 天的预报。
 - [ ] 用户不知道顶部的时间刻度和曲线上的白点可以拖动，用来看天空的变化；加上拖动引导。
 - [ ] 用户看完预报，不知道该怎么安排去看；增加一张生活和观赏建议卡片，不提供具体地点，也不接入地图。
 

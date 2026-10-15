@@ -22,6 +22,11 @@ export function formatWeekday(time: number, timeZone: string) {
   return formatter(timeZone, { weekday: "short" }).format(time);
 }
 
+/** "10月23日" */
+export function formatMonthDay(time: number, timeZone: string) {
+  return formatter(timeZone, { month: "long", day: "numeric" }).format(time);
+}
+
 /** "12日08时" */
 export function formatRunTime(time: number, timeZone: string) {
   return formatter(timeZone, { day: "numeric", hour: "2-digit", hourCycle: "h23" }).format(time).replace(/\s/g, "");

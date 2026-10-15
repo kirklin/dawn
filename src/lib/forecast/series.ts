@@ -1,4 +1,7 @@
-/** Linear interpolation of an hourly series at `at`; null outside the series or next to a missing value. */
+/**
+ * Linear interpolation of an hourly series at `at`; null outside the series or next to a missing value,
+ * except right on an hour, which needs no neighbour.
+ */
 export function valueAt(time: readonly number[], values: readonly (number | null)[], at: number): number | null {
   if (time.length === 0 || at < time[0] || at > time[time.length - 1]) {
     return null;
@@ -13,21 +16,16 @@ export function valueAt(time: readonly number[], values: readonly (number | null
       high = middle;
     }
   }
+  if (at === time[low]) {
+    return values[low];
+  }
+  if (at === time[high]) {
+    return values[high];
+  }
   const before = values[low];
   const after = values[high];
   if (before === null || after === null) {
     return null;
   }
-  if (time[high] === time[low]) {
-    return before;
-  }
   return before + (after - before) * (at - time[low]) / (time[high] - time[low]);
-}
-
-export function requireValueAt(time: readonly number[], values: readonly number[], at: number, label: string) {
-  const value = valueAt(time, values, at);
-  if (value === null) {
-    throw new Error(`${label} has no forecast at ${new Date(at).toISOString()}`);
-  }
-  return value;
 }

@@ -30,11 +30,11 @@ export interface GlowEvent {
 
 export interface ObserverHour {
   time: number;
-  /** Model-mean total cloud cover, 0–1. */
+  /** Total cloud cover, 0–1, averaged over the cloud models that reach the hour. */
   cloud: number;
 }
 
-/** What the sky looks like toward the sunrise or sunset in one forecast hour, averaged over the cloud models. */
+/** What the sky looks like toward the sunrise or sunset in one forecast hour, averaged over the cloud models that reach it. */
 export interface SkyHour {
   time: number;
   /** Low, mid and high cloud cover at each of PATH_DISTANCES_KM toward the sun. */
@@ -68,7 +68,9 @@ export interface PlaceForecast {
   generatedAt: number;
   runs: ModelRuns;
   days: SunDay[];
+  /** Hourly from the start of the first day, as far as a cloud model reaches. */
   hours: ObserverHour[];
+  /** The sunrises and sunsets every cloud model reaches, in order. */
   events: GlowEvent[];
   /** Absent where the sun neither rises nor sets in the coming days. */
   tracks: Partial<Record<GlowEventKind, SkyTrack>>;

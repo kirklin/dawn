@@ -14,4 +14,4 @@ export const MODEL_IDS: ModelId[] = CLOUD_MODELS.map(model => model.id);
 /** Distances along the sun's azimuth sampled for every glow event; 0 is the observer. */
 export const PATH_DISTANCES_KM = [0, 25, 50, 100, 150, 200, 300, 400] as const;
 
-export const FORECAST_DAYS = 4;
+export const FORECAST_DAYS = 15;
