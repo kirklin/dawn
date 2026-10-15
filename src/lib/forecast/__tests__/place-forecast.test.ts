@@ -62,7 +62,8 @@ describe("getPlaceForecast", () => {
     expect(forecast.events[0].aod).not.toBeNull();
     expect(forecast.events.at(-1)!.aod).toBeNull();
 
-    for (const run of Object.values(forecast.runs)) {
+    expect(forecast.runs).not.toBeNull();
+    for (const run of Object.values(forecast.runs!)) {
       expect(now - run).toBeLessThan(2 * 24 * 3600_000);
     }
   }, 60_000);

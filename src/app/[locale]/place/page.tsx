@@ -37,6 +37,7 @@ export default async function PlacePage({ params, searchParams }: { params: Para
       key={[current, lat, lon].join(",")}
       place={place}
       current={current === "1"}
+      example={false}
       forecast={forecast}
       renderedAt={forecast.generatedAt}
     />

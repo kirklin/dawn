@@ -15,7 +15,7 @@ export default function PlaceError({ error, retry }: { error: Error & { digest?:
       <button type="button" onClick={retry} className="mt-2 h-11 rounded-full bg-white/20 px-6 text-[17px] font-semibold">
         {t("retry")}
       </button>
-      <Link href="/" className="h-11 px-4 text-[17px] leading-[44px] text-white/80">
+      <Link href="/places" className="h-11 px-4 text-[17px] leading-[44px] text-white/80">
         {t("back")}
       </Link>
     </main>

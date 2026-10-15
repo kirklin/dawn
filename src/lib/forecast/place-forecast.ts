@@ -73,7 +73,8 @@ export interface ForecastData {
   clouds: CloudForecast;
   aerosols: AerosolForecast;
   winds: WindForecast;
-  runs: ModelRuns;
+  /** Null for the made-up example. */
+  runs: ModelRuns | null;
 }
 
 export async function getPlaceForecast(location: LatLon, now = Date.now()): Promise<PlaceForecast> {

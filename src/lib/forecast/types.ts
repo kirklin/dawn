@@ -66,7 +66,8 @@ export interface PlaceForecast {
   elevation: number;
   timezone: string;
   generatedAt: number;
-  runs: ModelRuns;
+  /** The model runs the forecast comes from; null for the made-up example, which comes from none. */
+  runs: ModelRuns | null;
   days: SunDay[];
   /** Hourly from the start of the first day, as far as a cloud model reaches. */
   hours: ObserverHour[];

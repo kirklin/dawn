@@ -12,11 +12,13 @@ interface PlaceTitleBarProps {
   ref: Ref<HTMLElement>;
   name: string;
   current: boolean;
+  /** Marks the made-up example as such. */
+  example: boolean;
   compact: string;
 }
 
 /** Place name pinned at the top while the cards scroll under it. */
-export function PlaceTitleBar({ ref, name, current, compact }: PlaceTitleBarProps) {
+export function PlaceTitleBar({ ref, name, current, example, compact }: PlaceTitleBarProps) {
   const t = useTranslations("Place");
 
   return (
@@ -25,6 +27,11 @@ export function PlaceTitleBar({ ref, name, current, compact }: PlaceTitleBarProp
         <h1 className="flex items-center gap-1.5 text-[28px] leading-[34px] font-medium">
           <span className="truncate">{name}</span>
           {current && <Navigation aria-label={t("myLocation")} className="size-4 shrink-0 fill-current" strokeWidth={0} />}
+          {example && (
+            <span className="sky-material ml-1 shrink-0 rounded-full px-2.5 text-[15px] leading-6 font-normal [text-shadow:none]">
+              {t("example")}
+            </span>
+          )}
         </h1>
         <p className="h-5 truncate text-[15px] leading-5 text-white/85 tabular-nums" style={COMPACT_STYLE}>
           {compact}

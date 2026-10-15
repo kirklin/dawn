@@ -12,7 +12,7 @@ import { useSwipePaging } from "~/components/ios/use-swipe-paging";
 import { ForecastSky } from "~/components/sky/forecast-sky";
 import { skyColors } from "~/components/sky/palette";
 import { glowMoment, skyParamsAt } from "~/components/sky/sky-params";
-import { dayAt, eventId, GLOW_LINGER_MS, lightPhaseAt, nearestEvent, nextSunCrossing, sunAltitudeAt, sunPathRange } from "~/lib/forecast/selectors";
+import { dayAt, eventId, GLOW_LINGER_MS, lightPhaseAt, nearestEvent, nextGlowEvent, nextSunCrossing, sunAltitudeAt, sunPathRange } from "~/lib/forecast/selectors";
 import { formatClock } from "~/lib/format";
 import { useRouter } from "~/lib/i18n/navigation";
 import { addPlace, locationStore, placeHref, placeKey, placePages, placesStore, useHydrated, useStore } from "~/lib/places/store";
@@ -20,6 +20,7 @@ import { zonedDateKey } from "~/lib/time/zoned";
 import { FactorCards } from "./cards/factor-cards";
 import { GlowForecastCard } from "./cards/glow-forecast-card";
 import { LightCard } from "./cards/light-card";
+import { LocateCard } from "./cards/locate-card";
 import { MoonCard } from "./cards/moon-card";
 import { PlaceFooter } from "./place-footer";
 import { PlaceHero, PlaceTitleBar } from "./place-title";
@@ -32,12 +33,14 @@ interface PlaceScreenProps {
   place: SavedPlace;
   /** The page of the device's own location. */
   current: boolean;
+  /** The made-up example shown to someone with no place of their own: it opens on its glow and offers to locate them. */
+  example: boolean;
   forecast: PlaceForecast;
   /** Server time of the render, so the first client render matches it. */
   renderedAt: number;
 }
 
-export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScreenProps) {
+export function PlaceScreen({ place, current, example, forecast, renderedAt }: PlaceScreenProps) {
   const t = useTranslations("Place");
   const router = useRouter();
   const now = useNow(renderedAt);
@@ -55,7 +58,7 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
   const pages = placePages(places, location);
   const pageIndex = pages.findIndex(page => page.current === current && (current || placeKey(page.place) === placeKey(place)));
   /** Opened from search, or from a link to a place the list does not hold. */
-  const unsaved = hydrated && pageIndex === -1;
+  const unsaved = hydrated && !example && pageIndex === -1;
   const add = () => {
     addPlace(place);
     toast(t("toolbar.added", { name: place.name }));
@@ -73,7 +76,10 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
   });
 
   /** The moment the sky shows; null follows the clock. */
-  const [chosen, setChosen] = useState<number | null>(null);
+  const [chosen, setChosen] = useState<number | null>(() => {
+    const featured = example ? nextGlowEvent(forecast.events, renderedAt) : null;
+    return featured && glowMoment(featured);
+  });
   const [scrubbing, setScrubbing] = useState(false);
   const scrubbed = useStore(scrubbedStore);
   const time = chosen ?? now;
@@ -109,7 +115,7 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
       style={{ "--scroll": 0, "--pin": "0px" } as CSSProperties}
     >
       <ForecastSky params={sky} instant={scrubbing} fallback={fallback} horizonRef={cardsRef} />
-      <PlaceTitleBar ref={barRef} name={place.name} current={current} compact={t("compact", { time: clock, phase })} />
+      <PlaceTitleBar ref={barRef} name={place.name} current={current} example={example} compact={t("compact", { time: clock, phase })} />
       <PlaceHero time={clock} context={context} onNow={chosen === null ? null : () => setChosen(null)}>
         <SunPath
           day={day}
@@ -129,6 +135,7 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
       </PlaceHero>
 
       <main ref={cardsRef} className="mx-auto grid max-w-xl grid-cols-2 gap-3 px-4">
+        {example && !(hydrated && location.enabled) && <LocateCard />}
         {upcoming.length > 0 && (
           <GlowForecastCard
             events={upcoming}
@@ -151,7 +158,7 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
       </main>
 
       <PlaceFooter runs={forecast.runs} timeZone={timezone} />
-      <PlaceToolbar pages={pages} index={pageIndex} onSelect={showPage} onAdd={unsaved ? add : null} name={place.name} />
+      <PlaceToolbar pages={example ? [] : pages} index={pageIndex} onSelect={showPage} onAdd={unsaved ? add : null} name={place.name} />
     </div>
   );
 }

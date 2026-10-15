@@ -40,6 +40,7 @@
   },
   "Place": {
     "myLocation": "我的位置",
+    "example": "示例",
     "hero": {
       "untilSunrise": "距离日出还有{duration}",
       "untilSunset": "距离日落还有{duration}",
@@ -128,7 +129,8 @@
     "footer": {
       "weather": "天气数据：Open-Meteo（ECMWF、GFS、CAMS）",
       "map": "地图数据：OpenStreetMap",
-      "runs": "起报时间：ECMWF {ecmwf}，GFS {gfs}，CAMS {cams}"
+      "runs": "起报时间：ECMWF {ecmwf}，GFS {gfs}，CAMS {cams}",
+      "example": "示例数据，展示一场大烧时的天空"
     },
     "toolbar": {
       "list": "地点列表",

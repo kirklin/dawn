@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { use } from "react";
-import { PlacesScreen } from "~/components/places/places-screen";
+import { HomeRedirect } from "~/components/place/home-redirect";
 import { createAlternates } from "~/lib/utils";
 
 type Params = Promise<{ locale: string }>;
@@ -15,5 +15,5 @@ export default function HomePage({ params }: { params: Params }) {
   const { locale } = use(params);
   setRequestLocale(locale);
 
-  return <PlacesScreen />;
+  return <HomeRedirect />;
 }

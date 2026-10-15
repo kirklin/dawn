@@ -1,10 +1,10 @@
 "use client";
 
-import { Navigation } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
 import { locationStore, placeKey, placesStore, removePlace, useHydrated, useStore } from "~/lib/places/store";
 import { cn } from "~/lib/utils";
+import { LocationRow } from "./location-row";
 import { PlaceCell } from "./place-cell";
 import { SearchField } from "./search-field";
 import { SearchResults } from "./search-results";
@@ -19,28 +19,6 @@ function subscribeToHash(onChange: () => void) {
 
 function isSearchLinked() {
   return window.location.hash === "#search";
-}
-
-function LocationRow({ locating, onLocate }: { locating: boolean; onLocate: () => void }) {
-  const t = useTranslations("Places");
-
-  return (
-    <div className="flex items-center gap-3 rounded-2xl bg-[#1c1c1e] px-4 py-3.5">
-      <Navigation className="size-5 shrink-0 fill-[#0a84ff] text-[#0a84ff]" strokeWidth={0} />
-      <div className="min-w-0 flex-1">
-        <p className="text-[17px] font-semibold">{t("myLocation")}</p>
-        <p className="text-[13px] text-white/60">{t("locateHint")}</p>
-      </div>
-      <button
-        type="button"
-        onClick={onLocate}
-        disabled={locating}
-        className="h-8 shrink-0 rounded-full bg-[#0a84ff] px-3.5 text-[15px] font-semibold disabled:opacity-60"
-      >
-        {locating ? t("locating") : t("locate")}
-      </button>
-    </div>
-  );
 }
 
 /** The list of places, like the iOS Weather location list: search on top, my location first. */
@@ -112,7 +90,7 @@ export function PlacesScreen() {
               <li>
                 {location.enabled && location.last
                   ? <PlaceCell place={location.last} current onDelete={() => locationStore.write({ enabled: false, last: null })} />
-                  : <LocationRow locating={locating} onLocate={() => void locate()} />}
+                  : <LocationRow locating={locating} onLocate={() => void locate()} className="rounded-2xl bg-[#1c1c1e]" />}
               </li>
               {places.map(place => (
                 <li key={placeKey(place)}>
