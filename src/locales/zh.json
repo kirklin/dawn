@@ -152,6 +152,7 @@
     "cancel": "取消",
     "searching": "正在搜索…",
     "searchFailed": "搜索失败：{message}",
+    "hotCities": "热门城市",
     "noResults": "无结果",
     "delete": "删除",
     "myLocation": "我的位置",

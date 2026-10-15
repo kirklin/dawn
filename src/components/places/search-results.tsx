@@ -3,13 +3,34 @@
 import type { SearchState } from "./use-place-search";
 import { useTranslations } from "next-intl";
 import { Link } from "~/lib/i18n/navigation";
+import { HOT_CITIES } from "~/lib/places/hot-cities";
 import { placeHref } from "~/lib/places/store";
+
+/** The popular cities, one tap from their forecast, while nothing has been typed. */
+function HotCities() {
+  const t = useTranslations("Places");
+
+  return (
+    <section className="mt-5">
+      <h2 className="text-[13px] text-white/60">{t("hotCities")}</h2>
+      <ul className="mt-2.5 grid grid-cols-4 gap-2.5">
+        {HOT_CITIES.map(city => (
+          <li key={city.name}>
+            <Link href={placeHref(city)} className="flex h-10 items-center justify-center rounded-[10px] bg-[rgb(118_118_128/0.24)] text-[15px]">
+              {city.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export function SearchResults({ search }: { search: SearchState }) {
   const t = useTranslations("Places");
 
   if (search.status === "idle") {
-    return null;
+    return <HotCities />;
   }
   if (search.status !== "done" || search.results.length === 0) {
     const message = search.status === "loading"
