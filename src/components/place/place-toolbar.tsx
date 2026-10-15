@@ -30,11 +30,11 @@ export function PlaceToolbar({ pages, index, onSelect, onAdd, name }: PlaceToolb
   return (
     <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-30 pb-[calc(env(safe-area-inset-bottom)+8px)]">
       <div className="mx-auto flex max-w-xl items-center justify-between px-4">
-        <Link href="/places" aria-label={t("list")} className={cn("sky-material", BUTTON)}>
+        <Link href="/places" aria-label={t("list")} className={cn("float-material", BUTTON)}>
           <List className="size-[22px]" />
         </Link>
         {(pages.length > 0 || onAdd) && (
-          <ol className="sky-material pointer-events-auto flex h-7 items-center rounded-full px-1.5">
+          <ol className="float-material pointer-events-auto flex h-7 items-center rounded-full px-1.5">
             {pages.map((page, pageIndex) => (
               <li key={`${page.current ? "current" : "saved"}-${placeKey(page.place)}`}>
                 <button
@@ -64,7 +64,7 @@ export function PlaceToolbar({ pages, index, onSelect, onAdd, name }: PlaceToolb
               </button>
             )
           : (
-              <Link href="/places#search" aria-label={t("search")} className={cn("sky-material", BUTTON)}>
+              <Link href="/places#search" aria-label={t("search")} className={cn("float-material", BUTTON)}>
                 <Plus className="size-[22px]" />
               </Link>
             )}
