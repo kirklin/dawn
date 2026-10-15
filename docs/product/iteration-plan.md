@@ -155,8 +155,8 @@
 ## 参考材料
 
 - [Kirk 迭代评估表](iteration-evaluation.md)
-- [已上传的用户反馈与产品建议](https://github.com/kirklin/twilit/blob/main/docs/product/feedback/README.md)
-- [观赏点 JSON 数据](https://github.com/kirklin/twilit/blob/main/data/viewpoints/catalog.json) · [数据说明](https://github.com/kirklin/twilit/blob/main/data/viewpoints/README.md)
+- [已上传的用户反馈与产品建议](https://github.com/kirklin/twilit/blob/docs/docs/product/feedback/README.md)
+- [观赏点 JSON 数据](https://github.com/kirklin/twilit/blob/docs/data/viewpoints/catalog.json) · [数据说明](https://github.com/kirklin/twilit/blob/docs/data/viewpoints/README.md)
 - [预报展示实现](https://github.com/kirklin/twilit/blob/0f27ab919f50e13261ba1661c3ac3ff11d9d18cf/src/components/place/cards/glow-forecast-card.tsx)
 - [预报请求与场次计算](https://github.com/kirklin/twilit/blob/0f27ab919f50e13261ba1661c3ac3ff11d9d18cf/src/lib/forecast/place-forecast.ts)
 - [四天配置](https://github.com/kirklin/twilit/blob/0f27ab919f50e13261ba1661c3ac3ff11d9d18cf/src/lib/forecast/models.ts)
