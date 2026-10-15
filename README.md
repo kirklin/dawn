@@ -53,13 +53,6 @@ The two scores are averaged, and the bar beside each event spans both, so its le
 
 The sky shows the present, or any moment from two hours before sunrise to two hours after sunset that you drag the sun to. Tapping a sunrise or sunset in the forecast jumps to three minutes after sunset, or before sunrise, when the glow is at its best. The atmosphere is single scattering through Rayleigh, Mie and ozone layers over a round Earth, traced on a coarse grid whenever the moment changes. Three cloud layers are drawn every frame from a tiling noise texture: cloudlets gathered into masses for low and mid cloud, and bands of fine strands for cirrus. They are cut to the forecast cover at each distance, lit from their sunward side, and carried by the 850, 600 and 300 hPa winds. The view faces the low sun at sunrise and sunset and turns its back on it once it has climbed; after dusk the stars come out. With reduced motion turned on, the clouds stay still.
 
-## TODO
-
-- [x] 新用户打开后先看到的是添加地点的页面，不知道该做什么；首屏改为展示一个大烧的广州示例地点，没有定位时提示用户开启定位，并申请定位权限。
-- [x] 预报天数太短，用户没法提前安排；预报延长到 15 天，点击后用弹窗展示未来 15 天的预报。
-- [x] 用户不知道顶部的时间刻度和曲线上的白点可以拖动，用来看天空的变化；加上拖动引导。
-- [ ] 用户看完预报，不知道该怎么安排去看；增加一张生活和观赏建议卡片，不提供具体地点，也不接入地图。
-
 ## Development
 
 ```bash
