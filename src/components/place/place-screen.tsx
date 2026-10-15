@@ -24,6 +24,7 @@ import { MoonCard } from "./cards/moon-card";
 import { PlaceFooter } from "./place-footer";
 import { PlaceHero, PlaceTitleBar } from "./place-title";
 import { PlaceToolbar } from "./place-toolbar";
+import { scrubbedStore } from "./scrubbed-store";
 import { SunPath } from "./sun-path";
 import { useLabels } from "./use-labels";
 
@@ -74,6 +75,7 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
   /** The moment the sky shows; null follows the clock. */
   const [chosen, setChosen] = useState<number | null>(null);
   const [scrubbing, setScrubbing] = useState(false);
+  const scrubbed = useStore(scrubbedStore);
   const time = chosen ?? now;
   const day = dayAt(forecast.days, time);
   if (!day) {
@@ -114,9 +116,13 @@ export function PlaceScreen({ place, current, forecast, renderedAt }: PlaceScree
           range={sunPathRange(day)}
           time={time}
           timeZone={timezone}
+          hint={hydrated && !scrubbed}
           onScrub={(moment) => {
             setScrubbing(true);
             setChosen(moment);
+            if (!scrubbed) {
+              scrubbedStore.write(true);
+            }
           }}
           onScrubEnd={() => setScrubbing(false)}
         />

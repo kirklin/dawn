@@ -26,7 +26,7 @@ interface Store<T> {
 }
 
 /** A localStorage entry exposed to React through useSyncExternalStore, synced across tabs. */
-function localStore<T>(key: string, schema: z.ZodType<T>, initial: T): Store<T> {
+export function localStore<T>(key: string, schema: z.ZodType<T>, initial: T): Store<T> {
   let cachedRaw: string | null = null;
   let cachedValue = initial;
   const listeners = new Set<() => void>();

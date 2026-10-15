@@ -53,6 +53,7 @@
       },
       "now": "回到现在",
       "scrub": "拖动查看一天中不同时刻的天空",
+      "scrubHint": "拖动白点或刻度，看看一天中天空的变化",
       "event": "{day}{event} {time}",
       "score": "鲜艳度 {score}%"
     },

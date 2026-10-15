@@ -133,6 +133,8 @@ interface SunPathProps {
   /** The moment shown. */
   time: number;
   timeZone: string;
+  /** Pulses the sun and says it can be dragged, for those who have not tried it yet. */
+  hint: boolean;
   onScrub: (time: number) => void;
   onScrubEnd: () => void;
 }
@@ -142,7 +144,7 @@ interface SunPathProps {
  * leaving the screen on both sides, sunrise and sunset, and the sun at the moment shown, above a time scale
  * whose ticks light up to that moment. Dragging along it, or tapping it, moves the moment.
  */
-export function SunPath({ day, range, time, timeZone, onScrub, onScrubEnd }: SunPathProps) {
+export function SunPath({ day, range, time, timeZone, hint, onScrub, onScrubEnd }: SunPathProps) {
   const glow = useTranslations("Glow");
   const t = useTranslations("Place.hero");
   const id = useId().replace(/:/g, "");
@@ -318,7 +320,9 @@ export function SunPath({ day, range, time, timeZone, onScrub, onScrubEnd }: Sun
           <span
             className="absolute size-3 -translate-1/2 rounded-full bg-white shadow-[0_0_12px_3px_rgb(255_255_255/0.5)]"
             style={{ left: percent(sun.left), top: sun.top, opacity: sunAltitude > 0 ? 1 : 0.6 }}
-          />
+          >
+            {hint && <span className="absolute inset-0 rounded-full bg-white motion-safe:animate-hint-pulse" />}
+          </span>
         )}
       </div>
 
@@ -326,6 +330,11 @@ export function SunPath({ day, range, time, timeZone, onScrub, onScrubEnd }: Sun
         <div className="absolute inset-0 opacity-35">{ticks}</div>
         <div className="absolute inset-0" style={{ clipPath: `inset(0 calc(100% - (${scaleOffset(sun.left)})) 0 0)` }}>{ticks}</div>
       </div>
+      {hint && (
+        <p className="text-on-sky pointer-events-none absolute inset-x-0 top-full mt-4 text-center text-[15px] leading-5 text-white/85">
+          {t("scrubHint")}
+        </p>
+      )}
     </div>
   );
 }
