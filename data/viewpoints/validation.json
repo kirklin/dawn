@@ -1,0 +1,856 @@
+{
+  "checked_at": "2026-10-15",
+  "status": "pass",
+  "checks": [
+    {
+      "check": "15 cities, 225 points, exactly 15 per city",
+      "pass": true
+    },
+    {
+      "check": "Unique record IDs and city/name pairs",
+      "pass": true
+    },
+    {
+      "check": "At least one traceable source per point",
+      "pass": true
+    },
+    {
+      "check": "All source URLs are HTTPS",
+      "pass": true
+    },
+    {
+      "check": "Paired coordinates, Chinese bounds and coordinate provenance",
+      "pass": true
+    },
+    {
+      "check": "Unknown dynamic and field survey values remain unknown",
+      "pass": true
+    },
+    {
+      "check": "Source evidence grades and event enums valid",
+      "pass": true
+    },
+    {
+      "check": "Published counts agree with JSON records",
+      "pass": true
+    },
+    {
+      "check": "CSV matches JSON IDs and reference coordinates",
+      "pass": true
+    },
+    {
+      "check": "HTML embeds the same complete JSON",
+      "pass": true
+    },
+    {
+      "check": "Markdown lists every location",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shenzhen-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: guangzhou-15",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: zhuhai-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: xiamen-15",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: fuzhou-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: fuzhou-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: fuzhou-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: fuzhou-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: fuzhou-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: fuzhou-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: fuzhou-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: hangzhou-15",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: shanghai-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: nanjing-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: nanjing-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: nanjing-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: nanjing-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: nanjing-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: nanjing-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: nanjing-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: suzhou-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: wuhan-15",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chengdu-15",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: chongqing-15",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-01",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-09",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-13",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-14",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: qingdao-15",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: dalian-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: dalian-03",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: dalian-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: dalian-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: dalian-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: dalian-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: dalian-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-02",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-04",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-05",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-06",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-07",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-08",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-10",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-11",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-12",
+      "pass": true
+    },
+    {
+      "check": "Geographic and object-kind match: sanya-14",
+      "pass": true
+    },
+    {
+      "check": "Known namesake errors do not survive",
+      "pass": true
+    },
+    {
+      "check": "Approximate conversion round-trip numerical residual < 1e-6 degrees",
+      "pass": true
+    }
+  ],
+  "summary": {
+    "cities": 15,
+    "points": 225,
+    "geolocated_landmarks": 208,
+    "unresolved_coordinates": 17,
+    "evidence_tiers": {
+      "A": 58,
+      "B": 117,
+      "C": 50
+    },
+    "sources": 426
+  },
+  "shared_landmark_anchors": [],
+  "remaining_coordinates": [
+    {
+      "id": "guangzhou-11",
+      "city": "广州",
+      "name": "阅江路"
+    },
+    {
+      "id": "zhuhai-12",
+      "city": "珠海",
+      "name": "金银湾公园"
+    },
+    {
+      "id": "fuzhou-03",
+      "city": "福州",
+      "name": "闽江公园金沙园"
+    },
+    {
+      "id": "fuzhou-10",
+      "city": "福州",
+      "name": "鼓山"
+    },
+    {
+      "id": "fuzhou-11",
+      "city": "福州",
+      "name": "鼓岭嘉湖"
+    },
+    {
+      "id": "fuzhou-12",
+      "city": "福州",
+      "name": "鼓岭柱里景区"
+    },
+    {
+      "id": "fuzhou-14",
+      "city": "福州",
+      "name": "下沙海滨度假村"
+    },
+    {
+      "id": "hangzhou-09",
+      "city": "杭州",
+      "name": "湘湖先照寺"
+    },
+    {
+      "id": "hangzhou-13",
+      "city": "杭州",
+      "name": "钱塘大湾区湿地公园"
+    },
+    {
+      "id": "shanghai-08",
+      "city": "上海",
+      "name": "世博公园"
+    },
+    {
+      "id": "nanjing-08",
+      "city": "南京",
+      "name": "玄武湖水岸听风"
+    },
+    {
+      "id": "nanjing-12",
+      "city": "南京",
+      "name": "石臼湖张许村"
+    },
+    {
+      "id": "suzhou-14",
+      "city": "苏州",
+      "name": "东山陆巷古村"
+    },
+    {
+      "id": "chongqing-06",
+      "city": "重庆",
+      "name": "苏家坝步道"
+    },
+    {
+      "id": "chongqing-12",
+      "city": "重庆",
+      "name": "北滨路"
+    },
+    {
+      "id": "dalian-14",
+      "city": "大连",
+      "name": "金石滩黄金海岸"
+    },
+    {
+      "id": "dalian-15",
+      "city": "大连",
+      "name": "旅顺西湖嘴"
+    }
+  ],
+  "c_grade_needs_direct_viewing_evidence": [
+    "shenzhen-08",
+    "shenzhen-09",
+    "shenzhen-10",
+    "guangzhou-04",
+    "guangzhou-05",
+    "guangzhou-07",
+    "guangzhou-10",
+    "zhuhai-09",
+    "zhuhai-13",
+    "zhuhai-15",
+    "xiamen-09",
+    "fuzhou-01",
+    "fuzhou-02",
+    "fuzhou-13",
+    "hangzhou-07",
+    "hangzhou-11",
+    "hangzhou-15",
+    "shanghai-03",
+    "shanghai-07",
+    "shanghai-13",
+    "nanjing-06",
+    "nanjing-08",
+    "nanjing-09",
+    "nanjing-13",
+    "suzhou-01",
+    "suzhou-02",
+    "suzhou-06",
+    "suzhou-07",
+    "suzhou-08",
+    "suzhou-11",
+    "wuhan-05",
+    "chengdu-08",
+    "chengdu-09",
+    "chengdu-11",
+    "chengdu-13",
+    "chengdu-14",
+    "chongqing-02",
+    "chongqing-03",
+    "chongqing-04",
+    "chongqing-07",
+    "chongqing-12",
+    "chongqing-13",
+    "chongqing-14",
+    "chongqing-15",
+    "qingdao-04",
+    "qingdao-09",
+    "dalian-01",
+    "dalian-04",
+    "dalian-09",
+    "sanya-13"
+  ],
+  "limitations": [
+    "Reference coordinates are not surveyed camera positions.",
+    "No access, opening-hour or ticket verification for a specific visit date.",
+    "Source grading is documentary screening, not forecast quality or field certification.",
+    "Approximate GCJ02 conversion residual verifies numerical consistency, not real-world survey accuracy."
+  ]
+}

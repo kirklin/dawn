@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Twilit 用户反馈与产品建议</title>
+  <style>
+    :root{--paper:#f5f3ee;--ink:#243044;--muted:#667085;--line:#e5e1d8;--card:#fff;--accent:#bd704c;--blue:#315b78}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.75 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+    .wrap{width:min(100% - 36px,1020px);margin:auto}.hero{padding:66px 0 38px;border-bottom:1px solid var(--line)}.eyebrow{color:var(--accent);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase}.hero h1{max-width:780px;margin:.35em 0;font-family:Georgia,"Songti SC",serif;font-size:clamp(2.2rem,6vw,4rem);line-height:1.12;letter-spacing:-.035em}.hero p{max-width:720px;color:var(--muted);font-size:1.08rem}.controls{position:sticky;top:0;z-index:4;background:#f5f3eeeF;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0}.toc{display:flex;gap:8px;overflow:auto;white-space:nowrap}.toc a,.switch button{border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;color:var(--ink);text-decoration:none;font:inherit;font-size:.86rem}.switch button.active{background:var(--blue);border-color:var(--blue);color:#fff}main{padding:34px 0 70px}.section{margin:0 0 42px;scroll-margin-top:84px}.section h2{font-family:Georgia,"Songti SC",serif;font-size:1.8rem;margin:0 0 10px}.section h3{font-size:1.08rem;margin:25px 0 7px}.lede,.muted{color:var(--muted)}.card{background:var(--card);border:1px solid #ebe8e1;border-radius:18px;padding:22px 24px;margin:14px 0;box-shadow:0 8px 24px #27364b08}.callout{border-left:3px solid var(--accent);background:#fffaf4;padding:16px 19px;border-radius:0 14px 14px 0}.table-wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:15px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;vertical-align:top;padding:13px 14px;border-bottom:1px solid #eeeae3}th{font-size:.86rem;color:var(--blue);background:#faf9f6}td{font-size:.94rem}tr:last-child td{border-bottom:0}.pill{display:inline-block;padding:2px 9px;border-radius:99px;background:#edf2f3;color:var(--blue);font-size:.82rem}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:16px;background:#fff;border:1px solid var(--line);border-radius:14px}.stat strong{display:block;font-size:1.7rem;color:var(--blue)}.stat span{font-size:.84rem;color:var(--muted)}ul,ol{padding-left:1.3rem}li{margin:.28em 0}a{color:#315b78}figure{margin:18px 0;background:#fff;padding:12px;border:1px solid var(--line);border-radius:16px}figure img{display:block;width:100%;height:auto;border-radius:9px}figcaption{color:var(--muted);font-size:.86rem;padding:8px 5px 0}.links{display:flex;flex-wrap:wrap;gap:9px}.links a{background:white;padding:9px 13px;border:1px solid var(--line);border-radius:12px;text-decoration:none}.foot{border-top:1px solid var(--line);padding:24px 0 45px;color:var(--muted);font-size:.88rem}[data-lang]{display:none}html[lang="zh-CN"] [data-lang="zh"],html[lang="en"] [data-lang="en"]{display:initial}.block[data-lang]{display:none}html[lang="zh-CN"] .block[data-lang="zh"],html[lang="en"] .block[data-lang="en"]{display:block}
+    @media(max-width:700px){.hero{padding-top:42px}.bar{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.card{padding:17px}}
+  </style>
+</head>
+<body>
+  <header class="wrap hero">
+    <div class="eyebrow">Twilit · Product notes · 15 Oct 2026</div>
+    <h1><span data-lang="zh">让预报变成一场值得安排的出行</span><span data-lang="en">Make the forecast useful for planning a sky worth seeing</span></h1>
+    <p data-lang="zh">把用户反馈、产品建议与首批城市观赏点整理成可执行的路线图。截图表达的是需求输入；实现状态已对照仓库代码核验。</p>
+    <p data-lang="en">A practical roadmap from user feedback and an initial city viewpoint catalog. Screenshot statements are treated as requests; implementation status was checked against the repository.</p>
+  </header>
+  <div class="controls"><div class="wrap bar"><nav class="toc"><a href="#findings"><span data-lang="zh">判断</span><span data-lang="en">Findings</span></a><a href="#feedback"><span data-lang="zh">反馈对照</span><span data-lang="en">Feedback</span></a><a href="#window"><span data-lang="zh">预测窗口</span><span data-lang="en">Forecast window</span></a><a href="#places"><span data-lang="zh">观赏点数据</span><span data-lang="en">Viewpoints</span></a><a href="#roadmap"><span data-lang="zh">路线图</span><span data-lang="en">Roadmap</span></a><a href="#sources"><span data-lang="zh">原始截图</span><span data-lang="en">Source images</span></a></nav><div class="switch"><button class="active" data-set-lang="zh-CN">中文</button> <button data-set-lang="en">EN</button></div></div></div>
+  <main class="wrap">
+    <section class="section" id="findings">
+      <h2><span data-lang="zh">产品判断</span><span data-lang="en">Product findings</span></h2>
+      <div class="card block" data-lang="zh"><p>Twilit 已有四天朝晚霞预报、因素解释、可交互的 WebGL 天空、地点搜索和收藏。反馈集中在三件事：用户看不出哪一场值得等；云量等指标与晚霞的关系不够直观；出游用户缺少观赏地点与日期判断依据。</p><p>优先让预报结论容易读、场次容易切换、观赏地点有来源可查，同时保留天空体验的浪漫感。</p></div>
+      <div class="card block" data-lang="en"><p>Twilit already has a four-day sunrise/sunset forecast, factor explanations, an interactive WebGL sky, place search, and saved places. Feedback points to three gaps: it is hard to tell which event is worth waiting for; cloud metrics are not intuitive; and travelers lack the viewpoint and date context needed to plan.</p><p>Make conclusions easier to read, events easier to compare, and viewpoint sources traceable while preserving the atmospheric sky experience.</p></div>
+    </section>
+    <section class="section" id="feedback">
+      <h2><span data-lang="zh">反馈、实现现状与建议</span><span data-lang="en">Feedback, current state, and recommendations</span></h2>
+      <div class="table-wrap block" data-lang="zh"><table><thead><tr><th>用户反馈</th><th>当前实现核对</th><th>建议</th></tr></thead><tbody>
+        <tr><td>四个因素卡片不错；整体设计浪漫</td><td>四因素卡和 WebGL 天空已存在</td><td>保留视觉风格；因素标题先说人话，专业名词作为补充</td></tr>
+        <tr><td>背景能否直观展示“火烧云”</td><td>可点选预报场次预览天空；默认天空与所选场次的时间关系需更清楚</td><td>标明实时/预览、日期和场次；用太阳—远处云层—观察者示意光路</td></tr>
+        <tr><td>结论太简单，想知道为什么、换地点或日期是否更好</td><td>已有因素解释，缺少综合判断与行动建议</td><td>提供“预测等级—主要原因—可做什么”；注明并列、数据缺失和模型分歧</td></tr>
+        <tr><td>不知道预报能点；缺少新手提示</td><td>预报行可点击，但提示不足；没有完整的可视引导</td><td>首次搜索、选预报和拖太阳时给轻提示；允许关闭和重看</td></tr>
+        <tr><td>中高云量难懂，页面不够形象</td><td>已有专业指标和部分解释</td><td>用“云能否被照亮”“夕阳能否照到云底”“空气通透程度”等口语标题，配光路机制图</td></tr>
+        <tr><td>只能看三天，想看更远日期</td><td>配置为四天；默认折叠场次可能被误解成天数</td><td>明确覆盖日期并按天展示；远期标成趋势参考并降低可信度提示</td></tr>
+        <tr><td>本地不烧时想找附近；想知道未来哪天最值得等</td><td>已有单地点预报，没有周边扫描和日期总结</td><td>先做轻量场次摘要和小范围比较，展示距离、数据完整度和模型差异</td></tr>
+        <tr><td>想要海边、山顶、公园等具体观赏地</td><td>地点可搜索，缺少整理过的观赏点和机位信息</td><td>人工建立 10–20 个城市、每城 10–30 个候选点，逐步核实坐标、视野与来源</td></tr>
+        <tr><td>搜索城市与加到首页容易混淆</td><td>搜索与收藏逻辑分开，部分文案仍暗示搜索即添加</td><td>搜索叫“搜索地点/查看预报”，保存动作叫“收藏地点”</td></tr>
+        <tr><td>本地熟手与出游新手需要不同路径</td><td>已有定位、收藏和搜索</td><td>提供本地/探索轻切换；默认本地快速查看，探索强调观赏点与出行条件</td></tr>
+        <tr><td>出行要考虑距离、方向、交通和景点类型</td><td>有太阳方位和地点坐标基础；路线时长与开放信息不足</td><td>先展示已确认的距离、方向、类别和准入信息；可靠数据接入后再提供路线</td></tr>
+      </tbody></table></div>
+      <div class="table-wrap block" data-lang="en"><table><thead><tr><th>Feedback</th><th>Checked implementation</th><th>Recommendation</th></tr></thead><tbody>
+        <tr><td>The four factor cards are useful; the design feels romantic</td><td>Factor cards and WebGL sky exist</td><td>Keep the visual identity; lead with plain-language factor labels</td></tr>
+        <tr><td>Show intuitively whether the sky may glow</td><td>Forecast events can preview the sky; time context needs clarity</td><td>Label live/preview state, date and event; add a sun-to-cloud light-path diagram</td></tr>
+        <tr><td>The conclusion is too simple; explain why and what to do</td><td>Factor explanations exist, but synthesis and action guidance are limited</td><td>Show rating, leading reason and action; account for ties, missing data and model disagreement</td></tr>
+        <tr><td>Users miss that events are clickable and need onboarding</td><td>Rows are buttons, but affordance is subtle; no full visual guide</td><td>Add dismissible, replayable hints near search, forecast selection and sun dragging</td></tr>
+        <tr><td>Cloud metrics are hard to understand; visuals lack explanation</td><td>Technical factors and some explanations exist</td><td>Use plain labels and a simple light-path diagram</td></tr>
+        <tr><td>Show more than a few days</td><td>Four-day configuration; collapsed events can look like a shorter forecast</td><td>Show dates by day; label long-range output as a lower-confidence trend</td></tr>
+        <tr><td>Find a nearby place when local conditions are poor; compare dates</td><td>Single-place forecasts exist; nearby scan and date summary do not</td><td>Start with lightweight event summaries and a small regional comparison</td></tr>
+        <tr><td>Recommend specific beaches, hills, parks and viewpoints</td><td>Search exists, but no reviewed viewpoint dataset or camera positions</td><td>Curate 10–20 cities with 10–30 candidates each, verifying coordinates, view and sources</td></tr>
+        <tr><td>Searching and adding a home place feel conflated</td><td>Search and saving are logically separate; some labels still imply otherwise</td><td>Separate “Search places” from “Save place” in the interface</td></tr>
+        <tr><td>Locals and travel planners need different paths</td><td>Location, saved places and search are available</td><td>Offer a light Local/Explore switch, defaulting to quick local viewing</td></tr>
+        <tr><td>Travel decisions need distance, direction, transit and place type</td><td>Sun azimuth and coordinates exist; route and access data are incomplete</td><td>Show confirmed distance, direction, category and access first; add routes only from reliable data</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="section" id="window">
+      <h2><span data-lang="zh">预测窗口与支持者方案</span><span data-lang="en">Forecast window and supporter tier</span></h2>
+      <div class="callout block" data-lang="zh">用户付费是为了提前安排一次晚霞出行，不是为了多看几组数字。14 天远期应称“趋势参考”或“出行窗口”，不能与前三天并列成同等准确的预报。</div>
+      <div class="callout block" data-lang="en">The value is planning a sunset outing in advance, not unlocking more numbers. A 14-day outlook should be labeled a trend or planning window, not presented as equally accurate to the next few days.</div>
+      <div class="table-wrap block" data-lang="zh"><table><thead><tr><th>体验</th><th>建议内容</th></tr></thead><tbody><tr><td>免费</td><td>今天及未来 2–3 天、基础朝晚霞等级、主要因素、天空背景预览</td></tr><tr><td>精神股东/支持者</td><td>最长 14 天趋势参考、值得关注日期、周末提示、周边观赏点、扩展因素分析与每周趋势</td></tr></tbody></table></div>
+      <div class="table-wrap block" data-lang="en"><table><thead><tr><th>Experience</th><th>Suggested contents</th></tr></thead><tbody><tr><td>Free</td><td>Today and the next 2–3 days, basic sunrise/sunset rating, leading factors and sky preview</td></tr><tr><td>Supporter</td><td>Up to 14 days of trend context, notable dates, weekend reminders, nearby viewpoints and fuller factor analysis</td></tr></tbody></table></div>
+      <div class="card block" data-lang="zh"><p>随日期变远明确降低可信度，不承诺 14 天结果固定准确。用户到达第 4 天、点“查看更多日期”、查周末或打开附近观赏地时，再自然介绍延长范围的价值；首页不弹窗。</p><p>支持者社群应提供功能内测、用户反馈、观测分享、城市地点推荐、每周趋势、重要天气提醒和产品更新记录，让支持者参与产品成长。</p></div>
+      <div class="card block" data-lang="en"><p>Show decreasing confidence with lead time and make no fixed accuracy promise for day 14. Introduce the extended outlook when a user reaches day four, asks for more dates, checks a weekend or opens nearby viewpoints. Avoid a home-screen popup.</p><p>Give supporters meaningful participation through feature previews, feedback, observations, city recommendations, weekly outlooks, major weather alerts and product updates.</p></div>
+    </section>
+    <section class="section" id="places">
+      <h2><span data-lang="zh">城市观赏点库：首批数据</span><span data-lang="en">City viewpoint catalog: first batch</span></h2>
+      <div class="stats"><div class="stat"><strong>15</strong><span data-lang="zh">城市</span><span data-lang="en">cities</span></div><div class="stat"><strong>225</strong><span data-lang="zh">候选点</span><span data-lang="en">candidate places</span></div><div class="stat"><strong>208</strong><span data-lang="zh">有参考坐标</span><span data-lang="en">landmark coordinates</span></div><div class="stat"><strong>17</strong><span data-lang="zh">坐标待确认</span><span data-lang="en">coordinates unresolved</span></div></div>
+      <div class="card block" data-lang="zh"><p>覆盖深圳、广州、珠海、厦门、福州、杭州、上海、南京、苏州、武汉、成都、重庆、青岛、大连和三亚，每城 15 个候选点。</p><p>A/B/C 证据等级分别为 58/117/50。A 为官方或地方新闻资料直接提及地点及朝晚霞、日出日落；B 为旅游平台或二手资料；C 为地点来源可追溯但观赏用途主要来自地形判断。等级不是实地机位、天气质量或观赏效果认证。</p><p>所有点尚未实地核验，camera position 为空。开放时间、票价、步行时间、社交热度和天气分数等未知值保留为空。未抓取小红书，也未将讨论热度当成天气或观赏质量。</p></div>
+      <div class="card block" data-lang="en"><p>The catalog covers Shenzhen, Guangzhou, Zhuhai, Xiamen, Fuzhou, Hangzhou, Shanghai, Nanjing, Suzhou, Wuhan, Chengdu, Chongqing, Qingdao, Dalian and Sanya, with 15 candidates per city.</p><p>Evidence tiers A/B/C contain 58/117/50 records. A means an official or local news source directly connects a place to sunrise, sunset or colorful clouds; B uses travel platforms or secondary sources; C has traceable place information but viewing suitability is mainly a terrain-based editorial judgment. Tiers do not certify camera positions or weather quality.</p><p>None of the places has been field-verified; camera positions are empty. Unknown access, price, walking time, social popularity and forecast values remain empty. No Xiaohongshu data was scraped, and discussion volume is not treated as weather or viewing quality.</p></div>
+      <div class="links"><a href="../../../data/viewpoints/catalog.json">JSON</a><a href="../../../data/viewpoints/catalog.csv">CSV</a><a href="../../../data/viewpoints/README.md"><span data-lang="zh">字段与来源说明</span><span data-lang="en">Data notes</span></a><a href="../../../data/viewpoints/validation.json"><span data-lang="zh">校验结果</span><span data-lang="en">Validation</span></a></div>
+    </section>
+    <section class="section" id="roadmap">
+      <h2><span data-lang="zh">建议落地顺序</span><span data-lang="en">Suggested sequence</span></h2>
+      <div class="card block" data-lang="zh"><ol><li><b>体验清晰度：</b>按天组织预报，显示日期和朝晚霞场次；新增综合结论与值得关注场次；改善搜索/收藏文案、因素标题和轻量引导。</li><li><b>预测窗口：</b>先验证天气、风场、气溶胶时效与缺测处理，再提供 7 天或 14 天趋势；明确远期不确定性。</li><li><b>观赏点试点：</b>人工审校首批候选，补充具体机位、方向、遮挡、开放信息和核验日期；搜索其他城市可直接查看，收藏与搜索分开。</li><li><b>用户共建和周边比较：</b>用户提交进入审核队列；审核来源、同名地点、坐标系和开放性后入库。天气、视野、距离、可达性分别展示。</li></ol><p>没有授权时不批量抓取社交平台。讨论热度和天气/观赏条件分开存储与解释。</p></div>
+      <div class="card block" data-lang="en"><ol><li><b>Clarity:</b> Group events by day, show dates and sunrise/sunset labels, add a synthesized outlook, and improve search/save labels, factor language and onboarding.</li><li><b>Forecast window:</b> Validate weather, wind, aerosol horizons and missing-data handling before adding a 7- or 14-day trend; show long-range uncertainty.</li><li><b>Viewpoint pilot:</b> Review the first candidates and add actual camera position, direction, obstruction, access and verification date. Keep search separate from saving.</li><li><b>Community and nearby comparison:</b> Review user submissions for sources, duplicate names, coordinate systems and access. Display weather, view conditions, distance and access separately.</li></ol><p>Do not bulk-scrape social platforms without authorization. Store and explain discussion volume separately from weather and viewing conditions.</p></div>
+    </section>
+    <section class="section" id="sources">
+      <h2><span data-lang="zh">原始截图</span><span data-lang="en">Source images</span></h2>
+      <p class="muted"><span data-lang="zh">截图是需求材料；每项实现状态以代码核验及产品验收为准。</span><span data-lang="en">Screenshots are source material. Implementation status should be confirmed against code and product acceptance.</span></p>
+      <figure><img src="source-images/01-feedback-analysis.png" alt="用户反馈与需求分析截图"><figcaption>01 · <span data-lang="zh">用户反馈与需求分析</span><span data-lang="en">User feedback analysis</span></figcaption></figure>
+      <figure><img src="source-images/02-membership-and-forecast-window.png" alt="会员与预测窗口建议截图"><figcaption>02 · <span data-lang="zh">会员与预测窗口</span><span data-lang="en">Membership and forecast window</span></figcaption></figure>
+      <figure><img src="source-images/03-viewpoint-catalog.png" alt="观赏点数据建议截图"><figcaption>03 · <span data-lang="zh">观赏点数据与用户共建</span><span data-lang="en">Viewpoint data and community input</span></figcaption></figure>
+    </section>
+    <footer class="foot"><span data-lang="zh">产品建议来自用户截图，数据限制和证据说明见随附 JSON 与 CSV。此目录是桌面研究初版，非实地认证。</span><span data-lang="en">Recommendations are derived from user-provided screenshots. See the JSON and CSV for data limitations. This is a desk-researched initial catalog, not field certification.</span></footer>
+  </main>
+  <script>
+    document.querySelectorAll('[data-set-lang]').forEach(button=>button.addEventListener('click',()=>{const lang=button.dataset.setLang;document.documentElement.lang=lang;document.querySelectorAll('[data-set-lang]').forEach(item=>item.classList.toggle('active',item===button));localStorage.setItem('twilit-feedback-lang',lang)}));
+    const saved=localStorage.getItem('twilit-feedback-lang');if(saved){document.documentElement.lang=saved;document.querySelectorAll('[data-set-lang]').forEach(button=>button.classList.toggle('active',button.dataset.setLang===saved))}
+  </script>
+</body>
+</html>
